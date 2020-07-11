@@ -1,5 +1,69 @@
+definitions:
+  apiModel.UserRegistParam:
+    properties:
+      password:
+        example: my_password
+        type: string
+      username:
+        example: my_username
+        type: string
+    type: object
+  handler.Response:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        type: object
+      msg:
+        example: ok
+        type: string
+    type: object
+  helperModel.PublicUser:
+    properties:
+      username:
+        type: string
+    type: object
 info:
   contact: {}
   license: {}
-paths: {}
+  title: swagger Example API (lil-helper)
+  version: 0.0.1
+paths:
+  /admin/helloadmin:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get hello admin
+      tags:
+      - Admin
+  /admin/regist:
+    post:
+      parameters:
+      - description: User registration parameters
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apiModel.UserRegistParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helperModel.PublicUser'
+              type: object
+      summary: User registration
+      tags:
+      - Admin
 swagger: "2.0"
