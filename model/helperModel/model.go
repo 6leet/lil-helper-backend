@@ -9,4 +9,6 @@ type User struct {
 	UID      string `gorm:""`
 	Username string `gorm:"unique_index;not null"`
 	Password string `gorm:"not null"`
+	Admin    bool   `gorm:"default:false"`
+	Active   bool   `gorm:"not null`
 }

@@ -21,13 +21,19 @@ definitions:
     type: object
   helperModel.PublicUser:
     properties:
+      active:
+        type: boolean
+      admin:
+        type: boolean
+      userUID:
+        type: string
       username:
         type: string
     type: object
 info:
   contact: {}
   license: {}
-  title: swagger Example API (lil-helper)
+  title: lil-helper swagger API
   version: 0.0.1
 paths:
   /admin/helloadmin:
@@ -40,6 +46,30 @@ paths:
           schema:
             type: string
       summary: Get hello admin
+      tags:
+      - Admin
+  /admin/login:
+    post:
+      parameters:
+      - description: User login parameters
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apiModel.UserRegistParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helperModel.PublicUser'
+              type: object
+      summary: User login test
       tags:
       - Admin
   /admin/regist:

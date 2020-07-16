@@ -44,6 +44,48 @@ var doc = `{
                 }
             }
         },
+        "/admin/login": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "User login test",
+                "parameters": [
+                    {
+                        "description": "User login parameters",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apiModel.UserRegistParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/helperModel.PublicUser"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/admin/regist": {
             "post": {
                 "produces": [
@@ -120,6 +162,15 @@ var doc = `{
         "helperModel.PublicUser": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "admin": {
+                    "type": "boolean"
+                },
+                "userUID": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string"
                 }
@@ -143,7 +194,7 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "",
 	BasePath:    "",
 	Schemes:     []string{},
-	Title:       "swagger Example API (lil-helper)",
+	Title:       "lil-helper swagger API",
 	Description: "",
 }
 

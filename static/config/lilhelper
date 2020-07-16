@@ -1,0 +1,16 @@
+entry_expire = 10
+
+[database]
+user= "leolee"
+password = "password"
+host = "localhost"
+port = 5432
+dbname = "lil-helper"
+config = ""
+
+[jwt.user]
+realm = "platform"
+identity_key = "uid"
+secret = "i am platform secret 7768"
+timeout = 60
+max_refresh = 60

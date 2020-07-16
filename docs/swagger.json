@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "swagger Example API (lil-helper)",
+        "title": "lil-helper swagger API",
         "contact": {},
         "license": {},
         "version": "0.0.1"
@@ -21,6 +21,48 @@
                         "description": "OK",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/login": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "User login test",
+                "parameters": [
+                    {
+                        "description": "User login parameters",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apiModel.UserRegistParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/helperModel.PublicUser"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -102,6 +144,15 @@
         "helperModel.PublicUser": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "admin": {
+                    "type": "boolean"
+                },
+                "userUID": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string"
                 }

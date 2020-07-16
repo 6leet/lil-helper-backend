@@ -12,7 +12,8 @@ func InitAdminRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	{
 		AdminRouter.GET("helloadmin", v1.HelloAdmin)
 
-		AdminRouter.POST("regist", v1.RegistUser)
+		AdminRouter.POST("regist", v1.RegistAdmin)
+		AdminRouter.POST("login", v1.LoginAdmin)
 	}
 	return AdminRouter
 }

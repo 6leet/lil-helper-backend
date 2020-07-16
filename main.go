@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-// @title swagger Example API (lil-helper)
+// @title lil-helper swagger API
 // @version 0.0.1
 // @discription API for lil-helper
 // @name Authorization
