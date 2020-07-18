@@ -1,4 +1,32 @@
 definitions:
+  apiModel.JsonObjectArray:
+    properties:
+      keys:
+        items:
+          type: string
+        type: array
+      objects:
+        items:
+          type: object
+        type: array
+    type: object
+  apiModel.SetMissionParam:
+    properties:
+      active:
+        type: boolean
+      content:
+        example: this is a content
+        type: string
+      picture:
+        example: this/is/a/path/of/picture.jpg
+        type: string
+      score:
+        type: integer
+      weight:
+        items:
+          type: integer
+        type: array
+    type: object
   apiModel.UserRegistParam:
     properties:
       password:
@@ -6,6 +34,16 @@ definitions:
         type: string
       username:
         example: my_username
+        type: string
+    type: object
+  apimodel.AuditScreenshotParams:
+    properties:
+      approve:
+        type: boolean
+      'missionID example:':
+        type: string
+      userID:
+        example: screenshot_userID
         type: string
     type: object
   handler.Response:
@@ -30,13 +68,84 @@ definitions:
       username:
         type: string
     type: object
+  helpermodel.Mission:
+    properties:
+      active:
+        type: boolean
+      content:
+        type: string
+      date:
+        type: string
+      picture:
+        type: string
+      score:
+        type: integer
+      uid:
+        type: string
+      weight:
+        items:
+          type: integer
+        type: array
+    type: object
+  helpermodel.PublicUser:
+    properties:
+      active:
+        type: boolean
+      admin:
+        type: boolean
+      userUID:
+        type: string
+      username:
+        type: string
+    type: object
+  helpermodel.Screenshot:
+    properties:
+      approve:
+        type: boolean
+      audit:
+        type: boolean
+      date:
+        type: string
+      missionID:
+        type: string
+      picture:
+        type: string
+      uid:
+        type: string
+      userID:
+        type: string
+    type: object
 info:
   contact: {}
   license: {}
   title: lil-helper swagger API
   version: 0.0.1
 paths:
-  /admin/helloadmin:
+  /admin/createmission:
+    post:
+      parameters:
+      - description: set mission params
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apiModel.SetMissionParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpermodel.Mission'
+              type: object
+      summary: create mission
+      tags:
+      - Admin
+  /admin/helpers:
     get:
       produces:
       - application/json
@@ -44,8 +153,33 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
-      summary: Get hello admin
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apiModel.JsonObjectArray'
+              type: object
+      summary: list helpers
+      tags:
+      - Admin
+  /admin/helpers/{uid}:
+    delete:
+      parameters:
+      - description: User uid
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: ban helper
       tags:
       - Admin
   /admin/login:
@@ -67,9 +201,89 @@ paths:
             - $ref: '#/definitions/handler.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/helperModel.PublicUser'
+                  $ref: '#/definitions/helpermodel.PublicUser'
               type: object
-      summary: User login test
+      summary: user login test
+      tags:
+      - Admin
+  /admin/missions:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apiModel.JsonObjectArray'
+              type: object
+      summary: list missions
+      tags:
+      - Admin
+  /admin/missions/{date}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apiModel.JsonObjectArray'
+              type: object
+      summary: list missions
+      tags:
+      - Admin
+  /admin/missions/{uid}:
+    delete:
+      parameters:
+      - description: mission uid
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: delete mission
+      tags:
+      - Admin
+    post:
+      parameters:
+      - description: mission uid
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: set mission params
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apiModel.SetMissionParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpermodel.Mission'
+              type: object
+      summary: update mission
       tags:
       - Admin
   /admin/regist:
@@ -93,7 +307,48 @@ paths:
                 data:
                   $ref: '#/definitions/helperModel.PublicUser'
               type: object
-      summary: User registration
+      summary: user registration
+      tags:
+      - Admin
+  /admin/screenshots:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apiModel.JsonObjectArray'
+              type: object
+      summary: list screenshots
+      tags:
+      - Admin
+  /admin/setscreenshotapprove:
+    post:
+      parameters:
+      - description: audit screenshot params
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.AuditScreenshotParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpermodel.Screenshot'
+              type: object
+      summary: audit screenshot
       tags:
       - Admin
 swagger: "2.0"

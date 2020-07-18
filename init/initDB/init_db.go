@@ -17,8 +17,13 @@ const (
 )
 
 func InitDatabase() {
+
+	// Config := config.Config.Database
+
 	payload := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
+	// payload := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+	// 	host, port, user, password, Config.Dbname)
 	DB, err := gorm.Open("postgres", payload)
 	if err != nil {
 		panic("Database initialization failed: " + err.Error())
