@@ -27,6 +27,12 @@ definitions:
           type: integer
         type: array
     type: object
+  apiModel.SetScreenshotParams:
+    properties:
+      missionID:
+        example: this/is/a/path/of/picture.jpg
+        type: string
+    type: object
   apiModel.UserRegistParam:
     properties:
       password:
@@ -40,10 +46,46 @@ definitions:
     properties:
       approve:
         type: boolean
-      'missionID example:':
+      missionID:
+        example: screenshot_missionID
         type: string
       userID:
         example: screenshot_userID
+        type: string
+    type: object
+  apimodel.JsonObjectArray:
+    properties:
+      keys:
+        items:
+          type: string
+        type: array
+      objects:
+        items:
+          type: object
+        type: array
+    type: object
+  apimodel.LoginParam:
+    properties:
+      password:
+        example: my_password
+        type: string
+      username:
+        example: my_username
+        type: string
+    type: object
+  apimodel.LoginResData:
+    properties:
+      expire:
+        example: "2020-04-01T12:08:36+08:00"
+        type: string
+      token:
+        example: eyJhbGciOiJIUzI1NiIkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsiOjE1ODU2nVpZCI6IVzZXJuYW1lIjoic3RyaW5nIn0.HbrhJbblrWLVqle6TI19bGX78ki4x5x1Wxs
+        type: string
+    type: object
+  apimodel.SetScreenshotParams:
+    properties:
+      missionID:
+        example: this/is/a/path/of/picture.jpg
         type: string
     type: object
   handler.Response:
@@ -237,7 +279,7 @@ paths:
                 data:
                   $ref: '#/definitions/apiModel.JsonObjectArray'
               type: object
-      summary: list missions
+      summary: list missions by date
       tags:
       - Admin
   /admin/missions/{uid}:
@@ -351,4 +393,229 @@ paths:
       summary: audit screenshot
       tags:
       - Admin
+  /base/login:
+    post:
+      parameters:
+      - description: user login parameters
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.LoginParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apimodel.LoginResData'
+              type: object
+      summary: User login
+      tags:
+      - Base
+  /base/refresh-token:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apimodel.LoginResData'
+              type: object
+      summary: User refresh token
+      tags:
+      - Base
+  /helper/mission:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpermodel.Mission'
+              type: object
+      summary: get mission
+      tags:
+      - Helper
+  /helper/regist:
+    post:
+      parameters:
+      - description: User registration parameters
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apiModel.UserRegistParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helperModel.PublicUser'
+              type: object
+      summary: user registration
+      tags:
+      - Helper
+  /helper/screenshot:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpermodel.Screenshot'
+              type: object
+      summary: get screenshot
+      tags:
+      - Helper
+    post:
+      parameters:
+      - description: set screenshot params
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apiModel.SetScreenshotParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpermodel.Screenshot'
+              type: object
+      summary: create screenshot
+      tags:
+      - Helper
+  /helper/screenshots:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apimodel.JsonObjectArray'
+              type: object
+      summary: list helper screenshots
+      tags:
+      - Helper
+  /helper/screenshots/{uid}:
+    delete:
+      parameters:
+      - description: screenshot uid
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: delete screenshot
+      tags:
+      - Helper
+    post:
+      parameters:
+      - description: screenshot uid
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: set screenshot params
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.SetScreenshotParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpermodel.Screenshot'
+              type: object
+      summary: update screenshot
+      tags:
+      - Helper
+  /helpers:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apimodel.JsonObjectArray'
+              type: object
+      summary: list top score users
+      tags:
+      - Common
+  /helpers/{limit}:
+    get:
+      parameters:
+      - description: top helpers limit
+        in: path
+        name: limit
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apimodel.JsonObjectArray'
+              type: object
+      summary: list top score users with limit
+      tags:
+      - Common
 swagger: "2.0"

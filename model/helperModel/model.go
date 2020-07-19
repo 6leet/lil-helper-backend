@@ -12,7 +12,7 @@ type User struct {
 	Username string `gorm:"unique_index;not null"`
 	Password string `gorm:"not null"`
 	Admin    bool   `gorm:"default:false"`
-	Active   bool   `gorm:"not null"`
+	Active   bool   `gorm:"not null;default:true"`
 }
 
 type Mission struct {

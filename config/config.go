@@ -11,7 +11,7 @@ import (
 
 var Config LilHelperConfig
 var VTool *viper.Viper
-var HelperJwt JwtConfig
+var UserJwt JwtConfig
 
 type LilHelperConfig struct {
 	Domain   string
@@ -20,7 +20,7 @@ type LilHelperConfig struct {
 }
 
 type LilHelperJwtConfig struct {
-	Helper JwtViperConfig
+	User JwtViperConfig
 }
 
 type DatabaseConfig struct {
@@ -80,6 +80,7 @@ type JwtConfig struct {
 func init() {
 	v := viper.New()
 	v.SetConfigName("lilhelper")
+	v.SetConfigType("toml")
 	v.AddConfigPath("static/config/")
 	if err := v.ReadInConfig(); err != nil {
 		panic(fmt.Errorf("read config file failed: %w \n", err))
@@ -94,7 +95,7 @@ func init() {
 			log.Println(err)
 		}
 	})
-	HelperJwt = Config.Jwt.Helper.JwtConfig()
+	UserJwt = Config.Jwt.User.JwtConfig()
 	if Config.Domain == "" {
 		Config.Domain = "127.0.0.1:8080"
 	}

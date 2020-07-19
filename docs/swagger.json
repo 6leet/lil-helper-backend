@@ -194,7 +194,7 @@
                 "tags": [
                     "Admin"
                 ],
-                "summary": "list missions",
+                "summary": "list missions by date",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -406,6 +406,400 @@
                     }
                 }
             }
+        },
+        "/base/login": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Base"
+                ],
+                "summary": "User login",
+                "parameters": [
+                    {
+                        "description": "user login parameters",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.LoginParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/apimodel.LoginResData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/base/refresh-token": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Base"
+                ],
+                "summary": "User refresh token",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/apimodel.LoginResData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/helper/mission": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Helper"
+                ],
+                "summary": "get mission",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/helpermodel.Mission"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/helper/regist": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Helper"
+                ],
+                "summary": "user registration",
+                "parameters": [
+                    {
+                        "description": "User registration parameters",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apiModel.UserRegistParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/helperModel.PublicUser"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/helper/screenshot": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Helper"
+                ],
+                "summary": "get screenshot",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/helpermodel.Screenshot"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Helper"
+                ],
+                "summary": "create screenshot",
+                "parameters": [
+                    {
+                        "description": "set screenshot params",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apiModel.SetScreenshotParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/helpermodel.Screenshot"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/helper/screenshots": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Helper"
+                ],
+                "summary": "list helper screenshots",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/apimodel.JsonObjectArray"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/helper/screenshots/{uid}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Helper"
+                ],
+                "summary": "update screenshot",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "screenshot uid",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "set screenshot params",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.SetScreenshotParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/helpermodel.Screenshot"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Helper"
+                ],
+                "summary": "delete screenshot",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "screenshot uid",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/helpers": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Common"
+                ],
+                "summary": "list top score users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/apimodel.JsonObjectArray"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/helpers/{limit}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Common"
+                ],
+                "summary": "list top score users with limit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "top helpers limit",
+                        "name": "limit",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/apimodel.JsonObjectArray"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -451,6 +845,15 @@
                 }
             }
         },
+        "apiModel.SetScreenshotParams": {
+            "type": "object",
+            "properties": {
+                "missionID": {
+                    "type": "string",
+                    "example": "this/is/a/path/of/picture.jpg"
+                }
+            }
+        },
         "apiModel.UserRegistParam": {
             "type": "object",
             "properties": {
@@ -470,12 +873,65 @@
                 "approve": {
                     "type": "boolean"
                 },
-                "missionID example:": {
-                    "type": "string"
+                "missionID": {
+                    "type": "string",
+                    "example": "screenshot_missionID"
                 },
                 "userID": {
                     "type": "string",
                     "example": "screenshot_userID"
+                }
+            }
+        },
+        "apimodel.JsonObjectArray": {
+            "type": "object",
+            "properties": {
+                "keys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "objects": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                }
+            }
+        },
+        "apimodel.LoginParam": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "my_password"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "my_username"
+                }
+            }
+        },
+        "apimodel.LoginResData": {
+            "type": "object",
+            "properties": {
+                "expire": {
+                    "type": "string",
+                    "example": "2020-04-01T12:08:36+08:00"
+                },
+                "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsiOjE1ODU2nVpZCI6IVzZXJuYW1lIjoic3RyaW5nIn0.HbrhJbblrWLVqle6TI19bGX78ki4x5x1Wxs"
+                }
+            }
+        },
+        "apimodel.SetScreenshotParams": {
+            "type": "object",
+            "properties": {
+                "missionID": {
+                    "type": "string",
+                    "example": "this/is/a/path/of/picture.jpg"
                 }
             }
         },

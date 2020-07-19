@@ -2,6 +2,7 @@ package v1
 
 import (
 	"errors"
+	"fmt"
 	apimodel "lil-helper-backend/model/apiModel"
 	helpermodel "lil-helper-backend/model/helperModel"
 	"lil-helper-backend/pkg/e"
@@ -57,6 +58,7 @@ func LoginAdmin(c *gin.Context) {
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else if err != nil {
+		fmt.Println("v1.admin.go")
 		app.Response(http.StatusUnauthorized, e.UNAUTHORIZED, nil)
 	} else {
 		app.Response(http.StatusOK, e.SUCCESS, user.Public())
@@ -184,7 +186,7 @@ func DeleteMission(c *gin.Context) {
 // @Produce application/json
 // @Success 200 {object} handler.Response{data=apiModel.JsonObjectArray}
 // @Router /admin/screenshots [get]
-func GetScreenshots(c *gin.Context) {
+func GetAllScreenshots(c *gin.Context) {
 	app := handler.Gin{C: c}
 
 	var screenshots []helpermodel.Screenshot

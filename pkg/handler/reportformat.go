@@ -1,7 +1,12 @@
 package handler
 
 import (
+	"fmt"
+	"lil-helper-backend/config"
+	helpermodel "lil-helper-backend/model/helperModel"
 	"lil-helper-backend/pkg/e"
+	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,5 +38,37 @@ func (g *Gin) MsgResponse(httpCode, errCode int, msg string, data interface{}) {
 		Msg:  msg,
 		Data: data,
 	})
+	return
+}
+
+func (g *Gin) GetUser() (user *helpermodel.User) {
+	if userInterface, ok := g.C.Get(config.UserJwt.IdentityKey); ok {
+		if user, ok = userInterface.(*helpermodel.User); ok {
+			return user
+		}
+	}
+	fmt.Println("reportformat.getUser")
+	g.Response(http.StatusUnauthorized, e.UNAUTHORIZED, nil)
+	return nil
+}
+
+func (g *Gin) SetJwtCookie(token string, expire time.Time, config config.JwtConfig) {
+	maxage := int(expire.Unix() - time.Now().Unix())
+	if int(config.MaxRefresh.Seconds()) > maxage {
+		maxage = int(config.MaxRefresh.Seconds())
+	}
+	g.C.SetCookie(
+		config.CookieName,
+		token,
+		maxage,
+		config.CookiePath,
+		config.CookieDomain,
+		config.SecureCookie,
+		config.CookieHTTPOnly,
+	)
+}
+
+func (g *Gin) Redirect(path string) {
+	g.C.Redirect(http.StatusMovedPermanently, path)
 	return
 }

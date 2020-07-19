@@ -34,6 +34,7 @@ func RegistUser(username string, password string, admin bool) (*User, error) {
 		Username: username,
 		Password: passwordMD5,
 		Admin:    admin,
+		Active:   true,
 	}
 	if notExist := tx.Where("username = ?", username).First(&user).RecordNotFound(); !notExist {
 		return nil, e.ErrUserExist

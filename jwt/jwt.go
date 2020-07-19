@@ -2,36 +2,43 @@ package jwt
 
 import (
 	"errors"
+	"fmt"
+	"lil-helper-backend/config"
 	"lil-helper-backend/hashids"
 	apimodel "lil-helper-backend/model/apiModel"
 	helpermodel "lil-helper-backend/model/helperModel"
+	"lil-helper-backend/pkg/e"
 	"lil-helper-backend/pkg/handler"
+	"net/http"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
-var identityKey = "id" // to be set
-
 var Jwt jwt.GinJWTMiddleware
 
 func init() {
+	config := config.UserJwt
+	var identityKey = config.IdentityKey
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "lil-helper",                    // to be set
-		Key:         []byte("lil-helper secret key"), // to be set
-		Timeout:     time.Hour,                       // to be set
-		MaxRefresh:  time.Hour,                       // to be set
+		Realm:       config.Realm,          // to be set
+		Key:         []byte(config.Secret), // to be set
+		Timeout:     config.Timeout,        // to be set
+		MaxRefresh:  config.MaxRefresh,     // to be set
 		IdentityKey: identityKey,
 
 		// done
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*helpermodel.User); ok {
+			fmt.Println("check")
+			fmt.Println(identityKey)
+			var username string = "username"
+			if u, ok := data.(*helpermodel.User); ok {
 				return jwt.MapClaims{
-					identityKey: v.UID,
-					"username":  v.Username,
-					"admin":     v.Admin,
-					"nonce":     v.UpdatedAt.Unix(),
+					identityKey: u.UID,
+					username:    u.Username,
+					"admin":     u.Admin,
+					"nonce":     u.UpdatedAt.Unix(),
 				}
 			}
 			return jwt.MapClaims{}
@@ -48,7 +55,7 @@ func init() {
 				return nil
 			} else if nonce, ok := claims["nonce"].(float64); !ok {
 				return nil
-			} else if !user.Active || user.UpdatedAt.Unix() > int64(nonce) {
+			} else if !user.Active || int64(user.UpdatedAt.Unix()) > int64(nonce) {
 				return nil
 			} else {
 				return user
@@ -74,6 +81,19 @@ func init() {
 			return nil, jwt.ErrFailedAuthentication
 		},
 
+		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
+			app := handler.Gin{C: c}
+			data := apimodel.LoginResData{Token: token, Expire: expire.Format(time.RFC3339)}
+			app.SetJwtCookie(token, expire, config)
+			app.Response(http.StatusOK, e.SUCCESS, data)
+		},
+		RefreshResponse: func(c *gin.Context, code int, token string, expire time.Time) {
+			app := handler.Gin{C: c}
+			data := apimodel.LoginResData{Token: token, Expire: expire.Format(time.RFC3339)}
+			app.SetJwtCookie(token, expire, config)
+			app.Response(http.StatusOK, e.SUCCESS, data)
+		},
+
 		// done
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			if _, ok := data.(*helpermodel.User); ok {
@@ -85,6 +105,7 @@ func init() {
 
 		// done
 		Unauthorized: func(c *gin.Context, code int, message string) {
+			fmt.Println("jwt.go")
 			app := handler.Gin{C: c}
 			app.MsgResponse(code, code, message, nil)
 		},
@@ -96,7 +117,7 @@ func init() {
 		// - "query:<name>"
 		// - "cookie:<name>"
 		// - "param:<name>"
-		TokenLookup: "header: Authorization, query: token, cookie: jwt",
+		TokenLookup: "header: Authorization, query: token, cookie: x-token",
 		// TokenLookup: "query:token",
 		// TokenLookup: "cookie:token",
 
@@ -104,7 +125,7 @@ func init() {
 		TokenHeadName: "Bearer",
 
 		// TimeFunc provides the current time. You can override it to use another time value. This is useful for testing or if your server uses a different time zone than your tokens.
-		TimeFunc: time.Now,
+		// TimeFunc: time.Now,
 	})
 
 	if err != nil {

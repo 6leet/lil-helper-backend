@@ -8,9 +8,9 @@ import (
 
 func InitAdminRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	AdminRouter := Router.Group("admin")
-
+	// AdminRouter.Use(middleware.Jwt())
 	{
-		AdminRouter.GET("screenshots", v1.GetScreenshots)
+		AdminRouter.GET("screenshots", v1.GetAllScreenshots)
 		AdminRouter.GET("helpers", v1.GetHelpers)
 		AdminRouter.GET("missions", v1.GetMissions)
 		AdminRouter.GET("missions/:date", v1.GetMissionsByDate)
