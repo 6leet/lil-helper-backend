@@ -12,6 +12,7 @@ func InitBaseRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	{
 		BaseRouter.GET("refresh-token", v1.RefreshToken)
 
+		BaseRouter.POST("regist", v1.Regist)
 		BaseRouter.POST("login", v1.Login)
 	}
 	return BaseRouter

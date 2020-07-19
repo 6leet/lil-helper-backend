@@ -12,7 +12,6 @@ func InitCommonRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	CommonRouter.Use(middleware.Jwt())
 	{
 		CommonRouter.GET("helpers", v1.GetTopScoreHelpers)
-		CommonRouter.GET("helpers/:uid", v1.GetTopScoreHelpersLimit)
 	}
 	return CommonRouter
 }

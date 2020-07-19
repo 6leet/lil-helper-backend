@@ -88,6 +88,15 @@ definitions:
         example: this/is/a/path/of/picture.jpg
         type: string
     type: object
+  apimodel.UserRegistParam:
+    properties:
+      password:
+        example: my_password
+        type: string
+      username:
+        example: my_username
+        type: string
+    type: object
   handler.Response:
     properties:
       code:
@@ -105,6 +114,8 @@ definitions:
         type: boolean
       admin:
         type: boolean
+      score:
+        type: integer
       userUID:
         type: string
       username:
@@ -125,9 +136,7 @@ definitions:
       uid:
         type: string
       weight:
-        items:
-          type: integer
-        type: array
+        type: string
     type: object
   helpermodel.PublicUser:
     properties:
@@ -135,6 +144,8 @@ definitions:
         type: boolean
       admin:
         type: boolean
+      score:
+        type: integer
       userUID:
         type: string
       username:
@@ -189,6 +200,15 @@ paths:
       - Admin
   /admin/helpers:
     get:
+      parameters:
+      - description: 'flag to query active user only (default: true)'
+        in: query
+        name: active
+        type: boolean
+      - description: 'flag to query all users (default: false)'
+        in: query
+        name: all
+        type: boolean
       produces:
       - application/json
       responses:
@@ -219,33 +239,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/handler.Response'
-      security:
-      - ApiKeyAuth: []
       summary: ban helper
-      tags:
-      - Admin
-  /admin/login:
-    post:
-      parameters:
-      - description: User login parameters
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/apiModel.UserRegistParam'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/helpermodel.PublicUser'
-              type: object
-      summary: user login test
       tags:
       - Admin
   /admin/missions:
@@ -434,6 +428,30 @@ paths:
       summary: User refresh token
       tags:
       - Base
+  /base/regist:
+    post:
+      parameters:
+      - description: User registration parameters
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.UserRegistParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpermodel.PublicUser'
+              type: object
+      summary: user registration
+      tags:
+      - Base
   /helper/mission:
     get:
       produces:
@@ -449,30 +467,6 @@ paths:
                   $ref: '#/definitions/helpermodel.Mission'
               type: object
       summary: get mission
-      tags:
-      - Helper
-  /helper/regist:
-    post:
-      parameters:
-      - description: User registration parameters
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/apiModel.UserRegistParam'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/helperModel.PublicUser'
-              type: object
-      summary: user registration
       tags:
       - Helper
   /helper/screenshot:
@@ -580,6 +574,11 @@ paths:
       - Helper
   /helpers:
     get:
+      parameters:
+      - description: top helpers limit
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -593,29 +592,6 @@ paths:
                   $ref: '#/definitions/apimodel.JsonObjectArray'
               type: object
       summary: list top score users
-      tags:
-      - Common
-  /helpers/{limit}:
-    get:
-      parameters:
-      - description: top helpers limit
-        in: path
-        name: limit
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/apimodel.JsonObjectArray'
-              type: object
-      summary: list top score users with limit
       tags:
       - Common
 swagger: "2.0"

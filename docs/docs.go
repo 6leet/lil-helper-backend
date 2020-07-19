@@ -76,6 +76,20 @@ var doc = `{
                     "Admin"
                 ],
                 "summary": "list helpers",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "flag to query active user only (default: true)",
+                        "name": "active",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "flag to query all users (default: false)",
+                        "name": "all",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -100,11 +114,6 @@ var doc = `{
         },
         "/admin/helpers/{uid}": {
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -126,48 +135,6 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/handler.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/login": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "user login test",
-                "parameters": [
-                    {
-                        "description": "User login parameters",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/apiModel.UserRegistParam"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/helpermodel.PublicUser"
-                                        }
-                                    }
-                                }
-                            ]
                         }
                     }
                 }
@@ -498,6 +465,48 @@ var doc = `{
                 }
             }
         },
+        "/base/regist": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Base"
+                ],
+                "summary": "user registration",
+                "parameters": [
+                    {
+                        "description": "User registration parameters",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.UserRegistParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/helpermodel.PublicUser"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/helper/mission": {
             "get": {
                 "produces": [
@@ -520,48 +529,6 @@ var doc = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/helpermodel.Mission"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/helper/regist": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Helper"
-                ],
-                "summary": "user registration",
-                "parameters": [
-                    {
-                        "description": "User registration parameters",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/apiModel.UserRegistParam"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/helperModel.PublicUser"
                                         }
                                     }
                                 }
@@ -757,44 +724,12 @@ var doc = `{
                     "Common"
                 ],
                 "summary": "list top score users",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/apimodel.JsonObjectArray"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/helpers/{limit}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Common"
-                ],
-                "summary": "list top score users with limit",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "top helpers limit",
                         "name": "limit",
-                        "in": "path",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -953,6 +888,19 @@ var doc = `{
                 }
             }
         },
+        "apimodel.UserRegistParam": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "my_password"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "my_username"
+                }
+            }
+        },
         "handler.Response": {
             "type": "object",
             "properties": {
@@ -977,6 +925,9 @@ var doc = `{
                 },
                 "admin": {
                     "type": "boolean"
+                },
+                "score": {
+                    "type": "integer"
                 },
                 "userUID": {
                     "type": "string"
@@ -1008,10 +959,7 @@ var doc = `{
                     "type": "string"
                 },
                 "weight": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 }
             }
         },
@@ -1023,6 +971,9 @@ var doc = `{
                 },
                 "admin": {
                     "type": "boolean"
+                },
+                "score": {
+                    "type": "integer"
                 },
                 "userUID": {
                     "type": "string"

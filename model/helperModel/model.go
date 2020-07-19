@@ -13,6 +13,7 @@ type User struct {
 	Password string `gorm:"not null"`
 	Admin    bool   `gorm:"default:false"`
 	Active   bool   `gorm:"not null;default:true"`
+	Score    int    `gorm:"default:0"`
 }
 
 type Mission struct {
@@ -20,7 +21,7 @@ type Mission struct {
 	UID     string    `gorm:""`
 	Content string    `gorm:"not null"`
 	Picture string    `gorm:"not null"`
-	Weight  []int     `gorm:"not null"`
+	Weight  string    `gorm:"not null"`
 	Score   int       `gorm:"not null"`
 	Date    time.Time `gorm:"not null"`
 	Active  bool      `gorm:"default:true"`

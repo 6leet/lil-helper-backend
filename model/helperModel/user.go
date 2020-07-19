@@ -6,6 +6,7 @@ import (
 	"lil-helper-backend/hashids"
 	"lil-helper-backend/pkg/e"
 	"lil-helper-backend/pkg/utils"
+	"sort"
 
 	"github.com/jinzhu/gorm"
 )
@@ -15,6 +16,7 @@ type PublicUser struct {
 	Username string `json:"username"`
 	Admin    bool   `json:"admin"`
 	Active   bool   `json:"active"`
+	Score    int    `json:"score"`
 }
 
 func (u *User) Public() (pu PublicUser) {
@@ -22,6 +24,7 @@ func (u *User) Public() (pu PublicUser) {
 	pu.Username = u.Username
 	pu.Admin = u.Admin
 	pu.Active = u.Active
+	pu.Score = u.Score
 	return pu
 }
 
@@ -35,6 +38,7 @@ func RegistUser(username string, password string, admin bool) (*User, error) {
 		Password: passwordMD5,
 		Admin:    admin,
 		Active:   true,
+		Score:    0,
 	}
 	if notExist := tx.Where("username = ?", username).First(&user).RecordNotFound(); !notExist {
 		return nil, e.ErrUserExist
@@ -76,4 +80,30 @@ func GetUser(id uint) (*User, error) {
 	} else {
 		return &user, nil
 	}
+}
+
+func GetUsers(active bool, admin bool, all bool, ifsort bool) ([]User, error) {
+	users := []User{}
+
+	query := db.LilHelperDB
+	if !all {
+		query = query.Where("active = ? AND admin = ?", active, admin)
+	}
+	if err := query.Find(&users).Error; err != nil {
+		return nil, fmt.Errorf("query users failed: %w", err)
+	}
+	if ifsort {
+		sort.SliceStable(users, func(i, j int) bool {
+			return users[i].Score > users[j].Score
+		})
+	}
+	return users, nil
+}
+
+func BanUser(id uint) error {
+	query := db.LilHelperDB
+	if err := query.Find(&User{}, id).Update("active", false).Error; err != nil {
+		return fmt.Errorf("ban user failed: %w", err)
+	}
+	return nil
 }

@@ -2,7 +2,7 @@ package v1
 
 import (
 	"errors"
-	"fmt"
+	"lil-helper-backend/hashids"
 	apimodel "lil-helper-backend/model/apiModel"
 	helpermodel "lil-helper-backend/model/helperModel"
 	"lil-helper-backend/pkg/e"
@@ -20,7 +20,7 @@ import (
 // @Param data body apiModel.UserRegistParam true "User registration parameters"
 // @Success 200 {object} handler.Response{data=helperModel.PublicUser}
 // @Router /admin/regist [post]
-func RegistAdmin(c *gin.Context) {
+func RegistAdmin(c *gin.Context) { // done
 	app := handler.Gin{C: c}
 	var params apimodel.UserRegistParam
 	if err := c.BindJSON(&params); err != nil {
@@ -39,39 +39,13 @@ func RegistAdmin(c *gin.Context) {
 	}
 }
 
-// LoginAdmin ...
-// @Tags Admin
-// @Summary user login test
-// @Produce application/json
-// @Param data body apiModel.UserRegistParam true "User login parameters"
-// @Success 200 {object} handler.Response{data=helpermodel.PublicUser}
-// @Router /admin/login [post]
-func LoginAdmin(c *gin.Context) {
-	app := handler.Gin{C: c}
-	var params apimodel.LoginParam
-	if err := c.BindJSON(&params); err != nil {
-		app.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
-		return
-	}
-
-	user, err := helpermodel.Login(params.Username, params.Password)
-	if errors.Unwrap(err) != nil {
-		app.Response(http.StatusInternalServerError, e.ERROR, nil)
-	} else if err != nil {
-		fmt.Println("v1.admin.go")
-		app.Response(http.StatusUnauthorized, e.UNAUTHORIZED, nil)
-	} else {
-		app.Response(http.StatusOK, e.SUCCESS, user.Public())
-	}
-}
-
 // CreateMission ...
 // @Tags Admin
 // @Summary create mission
 // @Produce application/json
 // @Param data body apiModel.SetMissionParam true "set mission params"
 // @Success 200 {object} handler.Response{data=helpermodel.Mission}
-// @Router /admin/createmission [post]
+// @Router /admin/mission [post]
 func CreateMission(c *gin.Context) {
 	app := handler.Gin{C: c}
 	var params apimodel.SetMissionParam
@@ -84,9 +58,9 @@ func CreateMission(c *gin.Context) {
 	mission := helpermodel.Mission{
 		Content: params.Content,
 		Picture: params.Picture,
-		Weight:  []int{1, 2, 3, 4, 5},
-		Score:   10,
-		Active:  params.Active,
+		// Weight:  []int{1, 2, 3, 4, 5},
+		Score:  10,
+		Active: params.Active,
 	}
 	app.Response(http.StatusOK, e.SUCCESS, mission)
 }
@@ -160,9 +134,9 @@ func UpdateMission(c *gin.Context) {
 		UID:     missionID,
 		Content: params.Content,
 		Picture: params.Picture,
-		Weight:  []int{1, 2, 3, 4, 5},
-		Score:   10,
-		Active:  params.Active,
+		// Weight:  []int{1, 2, 3, 4, 5},
+		Score:  10,
+		Active: params.Active,
 	}
 	app.Response(http.StatusOK, e.SUCCESS, mission)
 }
@@ -227,23 +201,35 @@ func SetScreenshotApprove(c *gin.Context) {
 // @Tags Admin
 // @Summary list helpers
 // @Produce application/json
+// @Param active query bool false "flag to query active user only (default: true)"
+// @Param all query bool false "flag to query all users (default: false)"
 // @Success 200 {object} handler.Response{data=apiModel.JsonObjectArray}
 // @Router /admin/helpers [get]
 func GetHelpers(c *gin.Context) {
 	app := handler.Gin{C: c}
 
-	var helpers []helpermodel.User
-	var helper helpermodel.User
-	helpers = append(helpers, helper)
-	helpers = append(helpers, helper)
-	jsonArray := apimodel.NewJsonObjectArray(helpers)
-	app.Response(http.StatusOK, e.SUCCESS, jsonArray)
+	var active, all = true, false
+	if activestr, ok := c.GetQuery("active"); ok && activestr == "false" {
+		active = false
+	}
+	if allstr, ok := c.GetQuery("all"); ok && allstr == "true" {
+		all = true
+	}
+	if helpers, err := helpermodel.GetUsers(active, false, all, false); err != nil {
+		app.Response(http.StatusInternalServerError, e.ERROR, nil)
+	} else {
+		var publicHelpers []helpermodel.PublicUser
+		for _, u := range helpers {
+			publicHelpers = append(publicHelpers, u.Public())
+		}
+		jsonArray := apimodel.NewJsonObjectArray(publicHelpers)
+		app.Response(http.StatusOK, e.SUCCESS, jsonArray)
+	}
 }
 
 // BanHelper ...
 // @Tags Admin
 // @Summary ban helper
-// @Security ApiKeyAuth
 // @Produce application/json
 // @Param uid path string true "User uid"
 // @Success 200 {object} handler.Response
@@ -252,5 +238,10 @@ func BanHelper(c *gin.Context) {
 	app := handler.Gin{C: c}
 
 	userID := c.Param("uid")
+	if id, err := hashids.DecodeUserUID(userID); err != nil {
+		app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
+	} else if err := helpermodel.BanUser(id); err != nil {
+		app.Response(http.StatusInternalServerError, e.ERROR, nil)
+	}
 	app.Response(http.StatusOK, e.SUCCESS, userID)
 }
