@@ -107,3 +107,21 @@ func BanUser(id uint) error {
 	}
 	return nil
 }
+
+func SetUserScore(id uint, missionID uint, addvar int) (*User, error) {
+	user := User{}
+	mission := Mission{}
+	tx := db.LilHelperDB.Begin()
+	defer tx.RollbackUnlessCommitted()
+	fmt.Println(missionID)
+	if err := tx.Find(&mission, missionID).Error; err != nil {
+		return nil, fmt.Errorf("query mission failed: %w", err)
+	}
+	scorevar := mission.Score * addvar
+	fmt.Println(scorevar, mission.Score, addvar)
+	if err := tx.Find(&user, id).Update("score", gorm.Expr("score + ?", scorevar)).Error; err != nil {
+		return nil, fmt.Errorf("user update failed: %w", err)
+	}
+	tx.Commit()
+	return &user, nil
+}

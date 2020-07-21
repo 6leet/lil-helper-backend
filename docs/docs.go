@@ -25,48 +25,6 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/createmission": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "create mission",
-                "parameters": [
-                    {
-                        "description": "set mission params",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/apiModel.SetMissionParam"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/helpermodel.Mission"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/admin/helpers": {
             "get": {
                 "produces": [
@@ -140,15 +98,26 @@ var doc = `{
                 }
             }
         },
-        "/admin/missions": {
-            "get": {
+        "/admin/mission": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Admin"
                 ],
-                "summary": "list missions",
+                "summary": "create mission",
+                "parameters": [
+                    {
+                        "description": "set mission params",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apiModel.SetMissionParams"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -161,7 +130,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/apiModel.JsonObjectArray"
+                                            "$ref": "#/definitions/helpermodel.Mission"
                                         }
                                     }
                                 }
@@ -171,7 +140,7 @@ var doc = `{
                 }
             }
         },
-        "/admin/missions/{date}": {
+        "/admin/missions": {
             "get": {
                 "produces": [
                     "application/json"
@@ -179,7 +148,21 @@ var doc = `{
                 "tags": [
                     "Admin"
                 ],
-                "summary": "list missions by date",
+                "summary": "list missions by date(optional), else list today's missions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "mission date from",
+                        "name": "datefrom",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "mission date to",
+                        "name": "dateto",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -225,7 +208,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/apiModel.SetMissionParam"
+                            "$ref": "#/definitions/apiModel.SetMissionParams"
                         }
                     }
                 ],
@@ -328,6 +311,27 @@ var doc = `{
                     "Admin"
                 ],
                 "summary": "list screenshots",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "screenshot date from",
+                        "name": "datefrom",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "screenshot date to",
+                        "name": "dateto",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "if screenshot auditted (default: false)",
+                        "name": "audit",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -350,7 +354,7 @@ var doc = `{
                 }
             }
         },
-        "/admin/setscreenshotapprove": {
+        "/admin/screenshots/{uid}": {
             "post": {
                 "produces": [
                     "application/json"
@@ -360,6 +364,13 @@ var doc = `{
                 ],
                 "summary": "audit screenshot",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "screenshot uid",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "audit screenshot params",
                         "name": "data",
@@ -539,35 +550,6 @@ var doc = `{
             }
         },
         "/helper/screenshot": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Helper"
-                ],
-                "summary": "get screenshot",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/helpermodel.Screenshot"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
             "post": {
                 "produces": [
                     "application/json"
@@ -617,7 +599,21 @@ var doc = `{
                 "tags": [
                     "Helper"
                 ],
-                "summary": "list helper screenshots",
+                "summary": "list screenshots by date(optional), else list today's screenshots",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "screenshot date from",
+                        "name": "datefrom",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "screenshot date to",
+                        "name": "dateto",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -630,7 +626,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/apimodel.JsonObjectArray"
+                                            "$ref": "#/definitions/apiModel.JsonObjectArray"
                                         }
                                     }
                                 }
@@ -641,53 +637,6 @@ var doc = `{
             }
         },
         "/helper/screenshots/{uid}": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Helper"
-                ],
-                "summary": "update screenshot",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "screenshot uid",
-                        "name": "uid",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "set screenshot params",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/apimodel.SetScreenshotParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/helpermodel.Screenshot"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
             "delete": {
                 "produces": [
                     "application/json"
@@ -773,7 +722,7 @@ var doc = `{
                 }
             }
         },
-        "apiModel.SetMissionParam": {
+        "apiModel.SetMissionParams": {
             "type": "object",
             "properties": {
                 "active": {
@@ -801,7 +750,11 @@ var doc = `{
         "apiModel.SetScreenshotParams": {
             "type": "object",
             "properties": {
-                "missionID": {
+                "missionUID": {
+                    "type": "string",
+                    "example": "screenshot_missionUID"
+                },
+                "picture": {
                     "type": "string",
                     "example": "this/is/a/path/of/picture.jpg"
                 }
@@ -825,14 +778,6 @@ var doc = `{
             "properties": {
                 "approve": {
                     "type": "boolean"
-                },
-                "missionID": {
-                    "type": "string",
-                    "example": "screenshot_missionID"
-                },
-                "userID": {
-                    "type": "string",
-                    "example": "screenshot_userID"
                 }
             }
         },
@@ -876,15 +821,6 @@ var doc = `{
                 "token": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsiOjE1ODU2nVpZCI6IVzZXJuYW1lIjoic3RyaW5nIn0.HbrhJbblrWLVqle6TI19bGX78ki4x5x1Wxs"
-                }
-            }
-        },
-        "apimodel.SetScreenshotParams": {
-            "type": "object",
-            "properties": {
-                "missionID": {
-                    "type": "string",
-                    "example": "this/is/a/path/of/picture.jpg"
                 }
             }
         },
@@ -996,7 +932,7 @@ var doc = `{
                     "type": "string"
                 },
                 "missionID": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "picture": {
                     "type": "string"
@@ -1005,7 +941,7 @@ var doc = `{
                     "type": "string"
                 },
                 "userID": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         }

@@ -8,7 +8,7 @@ var (
 	ErrUserNotExist            = fmt.Errorf("no such user")
 	ErrInvalidUserUID          = fmt.Errorf("invalid user uid")
 	ErrGameExist               = fmt.Errorf("game already exist")
-	ErrGameNotExist            = fmt.Errorf("no such game")
+	ErrMissionNotExist         = fmt.Errorf("no such mission")
 	ErrRoundPrefixExist        = fmt.Errorf("round prefix has been used")
 	ErrGameTypeExist           = fmt.Errorf("game type already exist")
 	ErrGameTypeNotExist        = fmt.Errorf("no such game type")

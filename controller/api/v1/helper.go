@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"errors"
+	"lil-helper-backend/hashids"
 	apimodel "lil-helper-backend/model/apiModel"
 	helpermodel "lil-helper-backend/model/helperModel"
 	"lil-helper-backend/pkg/e"
@@ -27,46 +29,53 @@ func GetMission(c *gin.Context) { // need: userID
 	app.Response(http.StatusOK, e.SUCCESS, mission)
 }
 
-// GetScreenshot ...
+// GetScreenshots ...
 // @Tags Helper
-// @Summary get screenshot
+// @Summary list screenshots by date(optional), else list today's screenshots
 // @Produce application/json
-// @Success 200 {object} handler.Response{data=helpermodel.Screenshot}
-// @Router /helper/screenshot [get]
-func GetScreenshot(c *gin.Context) { // need: userID, with date (today)
+// @Param datefrom query string false "screenshot date from"
+// @Param dateto query string false "screenshot date to"
+// @Success 200 {object} handler.Response{data=apiModel.JsonObjectArray}
+// @Router /helper/screenshots [get]
+func GetScreenshots(c *gin.Context) {
 	app := handler.Gin{C: c}
 
 	var user *helpermodel.User
 	if user = app.GetUser(); user == nil {
 		return
 	}
-
-	screenshot := helpermodel.Screenshot{
-		UserID: user.UID,
+	userID, err := hashids.DecodeUserUID(user.UID)
+	if err != nil {
+		app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
+		return
 	}
-	app.Response(http.StatusOK, e.SUCCESS, screenshot)
-}
 
-// GetScreenshots ...
-// @Tags Helper
-// @Summary list helper screenshots
-// @Produce application/json
-// @Success 200 {object} handler.Response{data=apimodel.JsonObjectArray}
-// @Router /helper/screenshots [get]
-func GetScreenshots(c *gin.Context) { // need: userID, dateFrom, dateTo
-	app := handler.Gin{C: c}
+	var dateFrom, dateTo string
 
-	// var user *helpermodel.User
-	// if user = app.GetUser()
-
-	screenshots := []helpermodel.Screenshot{}
-	screenshot := helpermodel.Screenshot{
-		Picture: "this/is/a/path/of/picture.jpg",
+	if dateFromq, ok := c.GetQuery("datefrom"); ok {
+		dateFrom = dateFromq
 	}
-	screenshots = append(screenshots, screenshot)
-	screenshots = append(screenshots, screenshot)
-	jsonArray := apimodel.NewJsonObjectArray(screenshots)
-	app.Response(http.StatusOK, e.SUCCESS, jsonArray)
+	if dateToq, ok := c.GetQuery("dateto"); ok {
+		dateTo = dateToq
+	}
+	if dateFrom == "" || dateTo == "" {
+		dateFrom = time.Now().String()[0:10]
+		dateTo = time.Now().AddDate(0, 0, 1).String()[0:10]
+	}
+
+	screenshots, err := helpermodel.GetScreenshotsByDate(userID, dateFrom, dateTo, false, false)
+	if errors.Unwrap(err) != nil {
+		app.Response(http.StatusInternalServerError, e.ERROR, nil)
+	} else if err != nil {
+		app.MsgResponse(http.StatusBadRequest, e.INVALID_PARAMS, err.Error(), nil)
+	} else {
+		var publicScreenshots []helpermodel.PublicScreenshot
+		for _, s := range screenshots {
+			publicScreenshots = append(publicScreenshots, s.Public())
+		}
+		jsonArray := apimodel.NewJsonObjectArray(publicScreenshots)
+		app.Response(http.StatusOK, e.SUCCESS, jsonArray)
+	}
 }
 
 // CreateScreenshot ...
@@ -78,37 +87,6 @@ func GetScreenshots(c *gin.Context) { // need: userID, dateFrom, dateTo
 // @Router /helper/screenshot [post]
 func CreateScreenshot(c *gin.Context) { // need: userID, with date (today)
 	app := handler.Gin{C: c}
-
-	var params apimodel.SetScreenshotParams
-	if err := c.BindJSON(&params); err != nil {
-		app.Response(http.StatusInternalServerError, e.ERROR, nil)
-		return
-	}
-
-	// var user *helpermodel.User
-	// if user = app.GetUser()
-
-	screenshot := helpermodel.Screenshot{
-		MissionID: params.MissionID,
-		Picture:   params.Picture,
-		Audit:     false,
-		Approve:   false,
-		Date:      time.Now(),
-	}
-	app.Response(http.StatusOK, e.SUCCESS, screenshot)
-}
-
-// UpdateScreenshot ...
-// @Tags Helper
-// @Summary update screenshot
-// @Produce application/json
-// @Param uid path string true "screenshot uid"
-// @Param data body apimodel.SetScreenshotParams true "set screenshot params"
-// @Success 200 {object} handler.Response{data=helpermodel.Screenshot}
-// @Router /helper/screenshots/{uid} [post]
-func UpdateScreenshot(c *gin.Context) { // need: userID
-	app := handler.Gin{C: c}
-	screenshotID := c.Param("uid")
 	var params apimodel.SetScreenshotParams
 
 	if err := c.BindJSON(&params); err != nil {
@@ -116,18 +94,28 @@ func UpdateScreenshot(c *gin.Context) { // need: userID
 		return
 	}
 
-	// var user *helpermodel.User
-	// if user = app.GetUser()
-
-	screenshot := helpermodel.Screenshot{
-		UID:       screenshotID,
-		MissionID: params.MissionID,
-		Picture:   params.Picture,
-		Audit:     false,
-		Approve:   false,
-		Date:      time.Now(),
+	var user *helpermodel.User
+	if user = app.GetUser(); user == nil {
+		return
 	}
-	app.Response(http.StatusOK, e.SUCCESS, screenshot)
+	userID, err := hashids.DecodeUserUID(user.UID)
+	if err != nil {
+		app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
+		return
+	}
+	missionID, err := hashids.DecodeMissionUID(params.MissionUID)
+	if err != nil {
+		app.Response(http.StatusBadRequest, e.ERR_NO_SUCH_MISSION, nil)
+		return
+	}
+	screenshot, err := helpermodel.CreateScreenshot(userID, missionID, params.Picture)
+	if errors.Unwrap(err) != nil {
+		app.Response(http.StatusInternalServerError, e.ERROR, nil)
+	} else if err != nil {
+		app.MsgResponse(http.StatusBadRequest, e.INVALID_PARAMS, err.Error(), nil)
+	} else {
+		app.Response(http.StatusOK, e.SUCCESS, screenshot.Public())
+	}
 }
 
 // DeleteScreenshot ...

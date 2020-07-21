@@ -1,6 +1,6 @@
 package apimodel
 
-type SetMissionParam struct {
+type SetMissionParams struct {
 	Content string `json:"content" example:"this is a content"`
 	Picture string `json:"picture" example:"this/is/a/path/of/picture.jpg"`
 	Weight  []int  `json:"weight"`

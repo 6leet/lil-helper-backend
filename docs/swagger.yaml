@@ -10,7 +10,7 @@ definitions:
           type: object
         type: array
     type: object
-  apiModel.SetMissionParam:
+  apiModel.SetMissionParams:
     properties:
       active:
         type: boolean
@@ -29,7 +29,10 @@ definitions:
     type: object
   apiModel.SetScreenshotParams:
     properties:
-      missionID:
+      missionUID:
+        example: screenshot_missionUID
+        type: string
+      picture:
         example: this/is/a/path/of/picture.jpg
         type: string
     type: object
@@ -46,12 +49,6 @@ definitions:
     properties:
       approve:
         type: boolean
-      missionID:
-        example: screenshot_missionID
-        type: string
-      userID:
-        example: screenshot_userID
-        type: string
     type: object
   apimodel.JsonObjectArray:
     properties:
@@ -80,12 +77,6 @@ definitions:
         type: string
       token:
         example: eyJhbGciOiJIUzI1NiIkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsiOjE1ODU2nVpZCI6IVzZXJuYW1lIjoic3RyaW5nIn0.HbrhJbblrWLVqle6TI19bGX78ki4x5x1Wxs
-        type: string
-    type: object
-  apimodel.SetScreenshotParams:
-    properties:
-      missionID:
-        example: this/is/a/path/of/picture.jpg
         type: string
     type: object
   apimodel.UserRegistParam:
@@ -160,13 +151,13 @@ definitions:
       date:
         type: string
       missionID:
-        type: string
+        type: integer
       picture:
         type: string
       uid:
         type: string
       userID:
-        type: string
+        type: integer
     type: object
 info:
   contact: {}
@@ -174,30 +165,6 @@ info:
   title: lil-helper swagger API
   version: 0.0.1
 paths:
-  /admin/createmission:
-    post:
-      parameters:
-      - description: set mission params
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/apiModel.SetMissionParam'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/helpermodel.Mission'
-              type: object
-      summary: create mission
-      tags:
-      - Admin
   /admin/helpers:
     get:
       parameters:
@@ -242,8 +209,15 @@ paths:
       summary: ban helper
       tags:
       - Admin
-  /admin/missions:
-    get:
+  /admin/mission:
+    post:
+      parameters:
+      - description: set mission params
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apiModel.SetMissionParams'
       produces:
       - application/json
       responses:
@@ -254,13 +228,22 @@ paths:
             - $ref: '#/definitions/handler.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/apiModel.JsonObjectArray'
+                  $ref: '#/definitions/helpermodel.Mission'
               type: object
-      summary: list missions
+      summary: create mission
       tags:
       - Admin
-  /admin/missions/{date}:
+  /admin/missions:
     get:
+      parameters:
+      - description: mission date from
+        in: query
+        name: datefrom
+        type: string
+      - description: mission date to
+        in: query
+        name: dateto
+        type: string
       produces:
       - application/json
       responses:
@@ -273,7 +256,7 @@ paths:
                 data:
                   $ref: '#/definitions/apiModel.JsonObjectArray'
               type: object
-      summary: list missions by date
+      summary: list missions by date(optional), else list today's missions
       tags:
       - Admin
   /admin/missions/{uid}:
@@ -306,7 +289,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/apiModel.SetMissionParam'
+          $ref: '#/definitions/apiModel.SetMissionParams'
       produces:
       - application/json
       responses:
@@ -348,6 +331,20 @@ paths:
       - Admin
   /admin/screenshots:
     get:
+      parameters:
+      - description: screenshot date from
+        in: query
+        name: datefrom
+        type: string
+      - description: screenshot date to
+        in: query
+        name: dateto
+        type: string
+      - description: 'if screenshot auditted (default: false)'
+        in: query
+        name: audit
+        required: true
+        type: boolean
       produces:
       - application/json
       responses:
@@ -363,9 +360,14 @@ paths:
       summary: list screenshots
       tags:
       - Admin
-  /admin/setscreenshotapprove:
+  /admin/screenshots/{uid}:
     post:
       parameters:
+      - description: screenshot uid
+        in: path
+        name: uid
+        required: true
+        type: string
       - description: audit screenshot params
         in: body
         name: data
@@ -470,22 +472,6 @@ paths:
       tags:
       - Helper
   /helper/screenshot:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/helpermodel.Screenshot'
-              type: object
-      summary: get screenshot
-      tags:
-      - Helper
     post:
       parameters:
       - description: set screenshot params
@@ -511,6 +497,15 @@ paths:
       - Helper
   /helper/screenshots:
     get:
+      parameters:
+      - description: screenshot date from
+        in: query
+        name: datefrom
+        type: string
+      - description: screenshot date to
+        in: query
+        name: dateto
+        type: string
       produces:
       - application/json
       responses:
@@ -521,9 +516,9 @@ paths:
             - $ref: '#/definitions/handler.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/apimodel.JsonObjectArray'
+                  $ref: '#/definitions/apiModel.JsonObjectArray'
               type: object
-      summary: list helper screenshots
+      summary: list screenshots by date(optional), else list today's screenshots
       tags:
       - Helper
   /helper/screenshots/{uid}:
@@ -542,34 +537,6 @@ paths:
           schema:
             $ref: '#/definitions/handler.Response'
       summary: delete screenshot
-      tags:
-      - Helper
-    post:
-      parameters:
-      - description: screenshot uid
-        in: path
-        name: uid
-        required: true
-        type: string
-      - description: set screenshot params
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/apimodel.SetScreenshotParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/helpermodel.Screenshot'
-              type: object
-      summary: update screenshot
       tags:
       - Helper
   /helpers:

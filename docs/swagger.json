@@ -7,48 +7,6 @@
         "version": "0.0.1"
     },
     "paths": {
-        "/admin/createmission": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "create mission",
-                "parameters": [
-                    {
-                        "description": "set mission params",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/apiModel.SetMissionParam"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/helpermodel.Mission"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/admin/helpers": {
             "get": {
                 "produces": [
@@ -122,15 +80,26 @@
                 }
             }
         },
-        "/admin/missions": {
-            "get": {
+        "/admin/mission": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Admin"
                 ],
-                "summary": "list missions",
+                "summary": "create mission",
+                "parameters": [
+                    {
+                        "description": "set mission params",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apiModel.SetMissionParams"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -143,7 +112,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/apiModel.JsonObjectArray"
+                                            "$ref": "#/definitions/helpermodel.Mission"
                                         }
                                     }
                                 }
@@ -153,7 +122,7 @@
                 }
             }
         },
-        "/admin/missions/{date}": {
+        "/admin/missions": {
             "get": {
                 "produces": [
                     "application/json"
@@ -161,7 +130,21 @@
                 "tags": [
                     "Admin"
                 ],
-                "summary": "list missions by date",
+                "summary": "list missions by date(optional), else list today's missions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "mission date from",
+                        "name": "datefrom",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "mission date to",
+                        "name": "dateto",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -207,7 +190,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/apiModel.SetMissionParam"
+                            "$ref": "#/definitions/apiModel.SetMissionParams"
                         }
                     }
                 ],
@@ -310,6 +293,27 @@
                     "Admin"
                 ],
                 "summary": "list screenshots",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "screenshot date from",
+                        "name": "datefrom",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "screenshot date to",
+                        "name": "dateto",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "if screenshot auditted (default: false)",
+                        "name": "audit",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -332,7 +336,7 @@
                 }
             }
         },
-        "/admin/setscreenshotapprove": {
+        "/admin/screenshots/{uid}": {
             "post": {
                 "produces": [
                     "application/json"
@@ -342,6 +346,13 @@
                 ],
                 "summary": "audit screenshot",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "screenshot uid",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "audit screenshot params",
                         "name": "data",
@@ -521,35 +532,6 @@
             }
         },
         "/helper/screenshot": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Helper"
-                ],
-                "summary": "get screenshot",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/helpermodel.Screenshot"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
             "post": {
                 "produces": [
                     "application/json"
@@ -599,7 +581,21 @@
                 "tags": [
                     "Helper"
                 ],
-                "summary": "list helper screenshots",
+                "summary": "list screenshots by date(optional), else list today's screenshots",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "screenshot date from",
+                        "name": "datefrom",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "screenshot date to",
+                        "name": "dateto",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -612,7 +608,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/apimodel.JsonObjectArray"
+                                            "$ref": "#/definitions/apiModel.JsonObjectArray"
                                         }
                                     }
                                 }
@@ -623,53 +619,6 @@
             }
         },
         "/helper/screenshots/{uid}": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Helper"
-                ],
-                "summary": "update screenshot",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "screenshot uid",
-                        "name": "uid",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "set screenshot params",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/apimodel.SetScreenshotParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/helpermodel.Screenshot"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
             "delete": {
                 "produces": [
                     "application/json"
@@ -755,7 +704,7 @@
                 }
             }
         },
-        "apiModel.SetMissionParam": {
+        "apiModel.SetMissionParams": {
             "type": "object",
             "properties": {
                 "active": {
@@ -783,7 +732,11 @@
         "apiModel.SetScreenshotParams": {
             "type": "object",
             "properties": {
-                "missionID": {
+                "missionUID": {
+                    "type": "string",
+                    "example": "screenshot_missionUID"
+                },
+                "picture": {
                     "type": "string",
                     "example": "this/is/a/path/of/picture.jpg"
                 }
@@ -807,14 +760,6 @@
             "properties": {
                 "approve": {
                     "type": "boolean"
-                },
-                "missionID": {
-                    "type": "string",
-                    "example": "screenshot_missionID"
-                },
-                "userID": {
-                    "type": "string",
-                    "example": "screenshot_userID"
                 }
             }
         },
@@ -858,15 +803,6 @@
                 "token": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsiOjE1ODU2nVpZCI6IVzZXJuYW1lIjoic3RyaW5nIn0.HbrhJbblrWLVqle6TI19bGX78ki4x5x1Wxs"
-                }
-            }
-        },
-        "apimodel.SetScreenshotParams": {
-            "type": "object",
-            "properties": {
-                "missionID": {
-                    "type": "string",
-                    "example": "this/is/a/path/of/picture.jpg"
                 }
             }
         },
@@ -978,7 +914,7 @@
                     "type": "string"
                 },
                 "missionID": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "picture": {
                     "type": "string"
@@ -987,7 +923,7 @@
                     "type": "string"
                 },
                 "userID": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         }

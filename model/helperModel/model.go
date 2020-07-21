@@ -30,8 +30,8 @@ type Mission struct {
 type Screenshot struct {
 	gorm.Model
 	UID       string    `gorm:""`
-	UserID    string    `gorm:"not null"`
-	MissionID string    `gorm:"not null"`
+	UserID    uint      `gorm:"not null"`
+	MissionID uint      `gorm:"not null"`
 	Picture   string    `gorm:"not null"`
 	Audit     bool      `gorm:"default:false"`
 	Approve   bool      `gorm:"default:false"`
