@@ -16,7 +16,7 @@ func InitHelperRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 
 		HelperRouter.POST("screenshot", v1.CreateScreenshot)
 
-		// HelperRouter.DELETE("screenshots/:uid", v1.DeleteScreenshot)
+		HelperRouter.DELETE("screenshots/:uid", v1.DeleteScreenshot)
 	}
 	return HelperRouter
 }

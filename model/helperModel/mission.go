@@ -79,19 +79,16 @@ func UpdateMission(id uint, content string, picture string, weight string, score
 }
 
 func DeleteMission(missionID uint) error {
-	// mission := Mission{}
+	mission := Mission{}
 	tx := db.LilHelperDB.Begin()
 	defer tx.RollbackUnlessCommitted()
-	// if err := tx.First(&mission, missionID).Error; err != nil {
-	// 	return fmt.Errorf("mission query failed: %w", err)
-	// }
-	// if err := tx.Delete(&mission).Error; err != nil {
-	// 	return fmt.Errorf("mission deletion failed: %w", err)
-	// }
-	fmt.Println("wtf tho")
-	if err := tx.Delete(Mission{}, "score = ?", 0).Error; err != nil {
+	if err := tx.First(&mission, missionID).Error; err != nil {
+		return fmt.Errorf("mission query failed: %w", err)
+	}
+	if err := tx.Delete(&mission).Error; err != nil {
 		return fmt.Errorf("mission deletion failed: %w", err)
 	}
+	tx.Commit()
 	return nil
 }
 

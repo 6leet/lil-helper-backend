@@ -113,3 +113,17 @@ func SetScreeshotApprove(id uint, approve bool) (*Screenshot, error) {
 	}
 	return &screenshot, nil
 }
+
+func DeleteScreenshot(screenshotID uint) error {
+	screenshot := Screenshot{}
+	tx := db.LilHelperDB.Begin()
+	defer tx.RollbackUnlessCommitted()
+	if err := tx.First(&screenshot, screenshotID).Error; err != nil {
+		return fmt.Errorf("screenshot query failed: %w", err)
+	}
+	if err := tx.Delete(&screenshot).Error; err != nil {
+		return fmt.Errorf("screenshot deletion failed: %w", err)
+	}
+	tx.Commit()
+	return nil
+}

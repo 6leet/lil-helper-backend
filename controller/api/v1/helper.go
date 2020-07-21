@@ -127,6 +127,18 @@ func CreateScreenshot(c *gin.Context) { // need: userID, with date (today)
 // @Router /helper/screenshots/{uid} [delete]
 func DeleteScreenshot(c *gin.Context) {
 	app := handler.Gin{C: c}
-	screenshotID := c.Param("uid")
-	app.Response(http.StatusOK, e.SUCCESS, screenshotID)
+	screenshotUID := c.Param("uid")
+	screenshotID, err := hashids.DecodeScreenshotUID(screenshotUID)
+	if err != nil {
+		app.Response(http.StatusBadRequest, e.ERR_NO_SUCH_SCREENSHOT, nil)
+		return
+	}
+	err = helpermodel.DeleteScreenshot(screenshotID)
+	if errors.Unwrap(err) != nil {
+		app.Response(http.StatusInternalServerError, e.ERROR, nil)
+	} else if err != nil {
+		app.MsgResponse(http.StatusBadRequest, e.INVALID_PARAMS, err.Error(), nil)
+	} else {
+		app.Response(http.StatusOK, e.SUCCESS, nil)
+	}
 }

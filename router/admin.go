@@ -22,7 +22,7 @@ func InitAdminRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 		AdminRouter.POST("missions/:uid", v1.UpdateMission)
 		AdminRouter.POST("screenshots/:uid", v1.SetScreenshotApprove)
 
-		// AdminRouter.DELETE("missions/:uid", v1.DeleteMission)
+		AdminRouter.DELETE("missions/:uid", v1.DeleteMission)
 		AdminRouter.DELETE("helpers/:uid", v1.BanHelper)
 	}
 	return AdminRouter
