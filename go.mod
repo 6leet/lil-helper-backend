@@ -15,6 +15,7 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/jinzhu/gorm v1.9.14
+	github.com/jmcvetta/randutil v0.0.0-20150817122601-2bb1b664bcff
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/mailru/easyjson v0.7.1 // indirect

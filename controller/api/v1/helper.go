@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jmcvetta/randutil"
 )
 
 // GetMission ...
@@ -22,11 +23,26 @@ import (
 func GetMission(c *gin.Context) { // need: userID
 	app := handler.Gin{C: c}
 
-	// var user *helpermodel.User
-	// if user = app.GetUser()
+	var user *helpermodel.User
+	if user = app.GetUser(); user == nil {
+		return
+	}
+	// userID, err := hashids.DecodeUserUID(user.UID)
+	// if err != nil {
+	// 	app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
+	// 	return
+	// }
+	choices, err := helpermodel.GetMissionsWeight(user.Level)
+	if err != nil {
+		app.Response(http.StatusBadRequest, e.ERROR, nil)
+	}
+	choice, err := randutil.WeightedChoice(choices)
+	if err != nil {
+		app.Response(http.StatusBadRequest, e.ERROR, nil)
+	}
 
-	mission := helpermodel.Mission{}
-	app.Response(http.StatusOK, e.SUCCESS, mission)
+	// mission := helpermodel.Mission{}
+	app.Response(http.StatusOK, e.SUCCESS, choice.Item)
 }
 
 // GetScreenshots ...

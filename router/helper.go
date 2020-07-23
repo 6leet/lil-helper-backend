@@ -11,7 +11,7 @@ func InitHelperRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	HelperRouter := Router.Group("helper")
 	HelperRouter.Use(middleware.Jwt())
 	{
-		// HelperRouter.GET("mission", v1.GetMission)
+		HelperRouter.GET("mission", v1.GetMission)
 		HelperRouter.GET("screenshots", v1.GetScreenshots)
 
 		HelperRouter.POST("screenshot", v1.CreateScreenshot)

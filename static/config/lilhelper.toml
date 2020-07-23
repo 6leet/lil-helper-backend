@@ -1,16 +1,23 @@
 entry_expire = 10
 
 [database]
-user= "leolee"
-password = "password"
-host = "localhost"
-port = 5432
-dbname = "lil-helper-db"
-config = ""
+  config = ""
+  dbname = "lil-helper-db"
+  host = "localhost"
+  password = "password"
+  port = 5432
+  user = "leolee"
 
-[jwt.user]
-realm = "lil-helper"
-identity_key = "uid"
-secret = "i am lil-helper secret 7768"
-timeout = 60
-max_refresh = 60
+[jwt]
+
+  [jwt.user]
+    identity_key = "uid"
+    max_refresh = 60
+    realm = "lil-helper"
+    secret = "i am lil-helper secret 7768"
+    timeout = 60
+
+[mission]
+  levelsexp = [0,1,2,3,4,5,6,7,8,9]
+  maxlevel = 10
+  totalweight = [0,2,4,6,8,10,12,14,16,18,10]

@@ -1,10 +1,14 @@
 package helpermodel
 
 import (
+	"encoding/json"
 	"fmt"
+	"lil-helper-backend/config"
 	"lil-helper-backend/db"
 	"lil-helper-backend/hashids"
 	"time"
+
+	"github.com/jmcvetta/randutil"
 )
 
 type PublicMission struct {
@@ -30,11 +34,11 @@ func (m *Mission) Public() PublicMission {
 	return p
 }
 
-func CreateMission(userID uint, content string, picture string, weight string, score int) (*Mission, error) {
+func CreateMission(userID uint, content string, picture string, weightstr string, score int) (*Mission, error) {
 	mission := Mission{
 		Content: content,
 		Picture: picture,
-		Weight:  weight,
+		Weight:  weightstr,
 		Score:   score,
 		Date:    time.Now(),
 		Active:  true,
@@ -54,6 +58,11 @@ func CreateMission(userID uint, content string, picture string, weight string, s
 		return nil, fmt.Errorf("mission uid update failed: %w", err)
 	}
 	tx.Commit()
+	var weight []int
+	if err := json.Unmarshal([]byte(mission.Weight), &weight); err != nil {
+		return nil, fmt.Errorf("json unmarshal weight failed: %w", err)
+	}
+	SetTotalMissionWeight(weight, 1)
 	return &mission, nil
 }
 
@@ -78,11 +87,11 @@ func UpdateMission(id uint, content string, picture string, weight string, score
 	return &mission, nil
 }
 
-func DeleteMission(missionID uint) error {
+func DeleteMission(id uint) error {
 	mission := Mission{}
 	tx := db.LilHelperDB.Begin()
 	defer tx.RollbackUnlessCommitted()
-	if err := tx.First(&mission, missionID).Error; err != nil {
+	if err := tx.First(&mission, id).Error; err != nil {
 		return fmt.Errorf("mission query failed: %w", err)
 	}
 	if err := tx.Delete(&mission).Error; err != nil {
@@ -100,4 +109,65 @@ func GetMissionsByDate(dateFrom string, dateTo string) ([]Mission, error) {
 		return nil, fmt.Errorf("query missions failed: %w", err)
 	}
 	return missions, nil
+}
+
+func ActivateMission(id uint, active bool) (*Mission, error) {
+
+	mission := Mission{}
+	updateMission := Mission{
+		Active: active,
+	}
+
+	tx := db.LilHelperDB.Begin()
+	defer tx.RollbackUnlessCommitted()
+	if err := tx.First(&mission, id).Error; err != nil {
+		return nil, fmt.Errorf("mission query failed: %w", err)
+	}
+	if err := tx.Model(&mission).Update(updateMission).Error; err != nil {
+		return nil, fmt.Errorf("mission activation failed: %w", err)
+	}
+	tx.Commit()
+	var weight []int
+	if err := json.Unmarshal([]byte(mission.Weight), &weight); err != nil {
+		return nil, fmt.Errorf("json unmarshal weight failed: %w", err)
+	}
+	addvar := 1
+	if !active {
+		addvar = -1
+	}
+	SetTotalMissionWeight(weight, addvar)
+	return &mission, nil
+}
+
+func GetMissionsWeight(level uint) ([]randutil.Choice, error) {
+	choices := []randutil.Choice{}
+	missions := []Mission{}
+
+	query := db.LilHelperDB
+	if err := query.Where("active = ?", true).Find(&missions).Error; err != nil {
+		return nil, fmt.Errorf("query mission failed: %w", err)
+	}
+	for _, m := range missions {
+		var weight []int
+		if err := json.Unmarshal([]byte(m.Weight), &weight); err != nil {
+			return nil, fmt.Errorf("json unmarshal weight failed: %w", err)
+		}
+		choice := randutil.Choice{
+			Weight: weight[level],
+			Item:   m.UID,
+		}
+		choices = append(choices, choice)
+	}
+	return choices, nil
+}
+
+func SetTotalMissionWeight(weight []int, addvar int) error {
+	VTool := config.VTool
+	config := config.Config.Mission
+	for i := 0; i <= config.Maxlevel; i++ {
+		config.Totalweight[i] = config.Totalweight[i] + weight[i]*addvar
+	}
+	VTool.Set("mission.totalweight", config.Totalweight)
+	VTool.WriteConfig()
+	return nil
 }

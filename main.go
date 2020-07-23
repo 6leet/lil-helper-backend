@@ -19,6 +19,17 @@ func main() {
 	flag.IntVar(&port, "port", 8080, "ip port (int)")
 	flag.Parse()
 
+	// fmt.Println(config.Config.Mission.Weights)
+	// fmt.Println(config.VTool.GetInt("mission.maxlevel"))
+	// for i := 0; i <= config.Config.Mission.Maxlevel; i++ {
+	// 	config.Config.Mission.Weights[i]++
+	// }
+	// config.VTool.Set("mission.weights", config.Config.Mission.Weights)
+	// fmt.Println(config.Config.Mission.Maxlevel)
+	// fmt.Println(config.VTool.GetInt("mission.maxlevel"))
+	// config.VTool.WriteConfig()
+	// fmt.Println(config.Config.Mission.Weights)
+	// fmt.Println(config.VTool.GetInt("mission.maxlevel"))
 	initdb.InitDatabase()
 
 	inittable.MigrateTable(db.LilHelperDB)

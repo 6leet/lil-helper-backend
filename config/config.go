@@ -17,10 +17,17 @@ type LilHelperConfig struct {
 	Domain   string
 	Database DatabaseConfig
 	Jwt      LilHelperJwtConfig
+	Mission  MissionConfig
 }
 
 type LilHelperJwtConfig struct {
 	User JwtViperConfig
+}
+
+type MissionConfig struct {
+	Maxlevel    int
+	Levelsexp   []int
+	Totalweight []int
 }
 
 type DatabaseConfig struct {

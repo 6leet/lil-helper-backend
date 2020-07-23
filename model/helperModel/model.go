@@ -14,6 +14,8 @@ type User struct {
 	Admin    bool   `gorm:"default:false"`
 	Active   bool   `gorm:"not null;default:true"`
 	Score    int    `gorm:"default:0"`
+	Exp      int    `gorm:"default:0"`
+	Level    uint   `gorm:"default:0"`
 }
 
 type Mission struct {
