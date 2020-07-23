@@ -882,9 +882,6 @@ var doc = `{
                 "content": {
                     "type": "string"
                 },
-                "date": {
-                    "type": "string"
-                },
                 "picture": {
                     "type": "string"
                 },
@@ -927,9 +924,6 @@ var doc = `{
                 },
                 "audit": {
                     "type": "boolean"
-                },
-                "date": {
-                    "type": "string"
                 },
                 "missionID": {
                     "type": "integer"

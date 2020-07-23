@@ -6,8 +6,9 @@ import (
 	"lil-helper-backend/config"
 	"lil-helper-backend/db"
 	"lil-helper-backend/hashids"
-	"time"
+	"lil-helper-backend/pkg/e"
 
+	"github.com/jinzhu/gorm"
 	"github.com/jmcvetta/randutil"
 )
 
@@ -28,7 +29,7 @@ func (m *Mission) Public() PublicMission {
 		Picture: m.Picture,
 		Weight:  m.Weight,
 		Score:   m.Score,
-		Date:    m.Date.String()[0:10],
+		Date:    m.CreatedAt.String()[0:10],
 		Active:  m.Active,
 	}
 	return p
@@ -40,7 +41,6 @@ func CreateMission(userID uint, content string, picture string, weightstr string
 		Picture: picture,
 		Weight:  weightstr,
 		Score:   score,
-		Date:    time.Now(),
 		Active:  true,
 	}
 
@@ -154,7 +154,7 @@ func GetMissionsWeight(level uint) ([]randutil.Choice, error) {
 		}
 		choice := randutil.Choice{
 			Weight: weight[level],
-			Item:   m.UID,
+			Item:   m,
 		}
 		choices = append(choices, choice)
 	}
@@ -170,4 +170,17 @@ func SetTotalMissionWeight(weight []int, addvar int) error {
 	VTool.Set("mission.totalweight", config.Totalweight)
 	VTool.WriteConfig()
 	return nil
+}
+
+func GetMission(id uint) (*Mission, error) {
+	mission := Mission{}
+
+	query := db.LilHelperDB.Where("id = ?", id)
+	if err := query.First(&mission).Error; err == gorm.ErrRecordNotFound {
+		return nil, e.ErrMissionNotExist
+	} else if err != nil {
+		return nil, fmt.Errorf("Mission query failed: %w", err)
+	} else {
+		return &mission, nil
+	}
 }

@@ -12,7 +12,7 @@ var (
 	ErrRoundPrefixExist        = fmt.Errorf("round prefix has been used")
 	ErrGameTypeExist           = fmt.Errorf("game type already exist")
 	ErrGameTypeNotExist        = fmt.Errorf("no such game type")
-	ErrBetNotExist             = fmt.Errorf("no such bet")
+	ErrAssignmentNotExist      = fmt.Errorf("no such Assignment")
 	ErrMemberNotExist          = fmt.Errorf("no such member")
 	ErrMemberExist             = fmt.Errorf("member already exist")
 	ErrIncorrectDepositAmount  = fmt.Errorf("deposit amount must be greater than 0")

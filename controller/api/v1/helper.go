@@ -27,22 +27,40 @@ func GetMission(c *gin.Context) { // need: userID
 	if user = app.GetUser(); user == nil {
 		return
 	}
-	// userID, err := hashids.DecodeUserUID(user.UID)
-	// if err != nil {
-	// 	app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
-	// 	return
-	// }
-	choices, err := helpermodel.GetMissionsWeight(user.Level)
+	userID, err := hashids.DecodeUserUID(user.UID)
 	if err != nil {
-		app.Response(http.StatusBadRequest, e.ERROR, nil)
+		app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
+		return
 	}
-	choice, err := randutil.WeightedChoice(choices)
-	if err != nil {
-		app.Response(http.StatusBadRequest, e.ERROR, nil)
+	if assignment, err := helpermodel.GetAssignment(userID); assignment != nil {
+		mission, err := helpermodel.GetMission(assignment.MissionID)
+		if err != nil {
+			app.Response(http.StatusBadRequest, e.ERR_NO_SUCH_MISSION, nil)
+			return
+		}
+		app.Response(http.StatusOK, e.SUCCESS, mission.Public())
+		return
+	} else if err == e.ErrAssignmentNotExist {
+		choices, err := helpermodel.GetMissionsWeight(user.Level)
+		if err != nil {
+			app.Response(http.StatusBadRequest, e.ERROR, nil)
+			return
+		}
+		choice, err := randutil.WeightedChoice(choices)
+		if err != nil {
+			app.Response(http.StatusBadRequest, e.ERROR, nil)
+			return
+		}
+		mission, _ := choice.Item.(helpermodel.Mission)
+		missionID, err := hashids.DecodeMissionUID(mission.UID)
+		if err := helpermodel.CreateAssignment(userID, missionID); err != nil {
+			app.Response(http.StatusBadRequest, e.ERROR, nil)
+			return
+		}
+		app.Response(http.StatusOK, e.SUCCESS, mission.Public())
 	}
 
 	// mission := helpermodel.Mission{}
-	app.Response(http.StatusOK, e.SUCCESS, choice.Item)
 }
 
 // GetScreenshots ...

@@ -864,9 +864,6 @@
                 "content": {
                     "type": "string"
                 },
-                "date": {
-                    "type": "string"
-                },
                 "picture": {
                     "type": "string"
                 },
@@ -909,9 +906,6 @@
                 },
                 "audit": {
                     "type": "boolean"
-                },
-                "date": {
-                    "type": "string"
                 },
                 "missionID": {
                     "type": "integer"

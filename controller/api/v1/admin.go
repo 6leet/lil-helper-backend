@@ -30,7 +30,7 @@ func RegistAdmin(c *gin.Context) { // done
 	}
 
 	var admin bool = true
-	user, err := helpermodel.RegistUser(params.Username, params.Password, admin)
+	user, err := helpermodel.RegistUser(params.Username, params.Password, params.Email, admin)
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else if err != nil {

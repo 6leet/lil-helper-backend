@@ -118,8 +118,6 @@ definitions:
         type: boolean
       content:
         type: string
-      date:
-        type: string
       picture:
         type: string
       score:
@@ -148,8 +146,6 @@ definitions:
         type: boolean
       audit:
         type: boolean
-      date:
-        type: string
       missionID:
         type: integer
       picture:

@@ -11,5 +11,7 @@ func MigrateTable(DB *gorm.DB) {
 		helpermodel.User{},
 		helpermodel.Mission{},
 		helpermodel.Screenshot{},
+		helpermodel.Assignment{},
+		helpermodel.Emailtoken{},
 	)
 }
