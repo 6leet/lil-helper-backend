@@ -6,6 +6,7 @@
         "license": {},
         "version": "0.0.1"
     },
+    "basePath": "/backend",
     "paths": {
         "/admin/helpers": {
             "get": {

@@ -963,7 +963,7 @@ type swaggerInfo struct {
 var SwaggerInfo = swaggerInfo{
 	Version:     "0.0.1",
 	Host:        "",
-	BasePath:    "",
+	BasePath:    "/backend",
 	Schemes:     []string{},
 	Title:       "lil-helper swagger API",
 	Description: "",

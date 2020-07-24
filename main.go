@@ -13,7 +13,7 @@ import (
 // @version 0.0.1
 // @discription API for lil-helper
 // @name Authorization
-// @BasePath
+// @BasePath /backend
 func main() {
 	var port int
 	flag.IntVar(&port, "port", 8080, "ip port (int)")
