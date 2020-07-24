@@ -16,7 +16,7 @@ func InitRouter() *gin.Engine {
 
 	Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	ApiGroup := Router.Group("")
+	ApiGroup := Router.Group("backend")
 	router.InitAdminRouter(ApiGroup)
 	router.InitHelperRouter(ApiGroup)
 	router.InitCommonRouter(ApiGroup)

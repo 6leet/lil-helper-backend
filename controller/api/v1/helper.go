@@ -176,3 +176,22 @@ func DeleteScreenshot(c *gin.Context) {
 		app.Response(http.StatusOK, e.SUCCESS, nil)
 	}
 }
+
+func UpdateToken(c *gin.Context) {
+	app := handler.Gin{C: c}
+	var user *helpermodel.User
+	if user = app.GetUser(); user == nil {
+		return
+	}
+	userID, err := hashids.DecodeUserUID(user.UID)
+	if err != nil {
+		app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
+		return
+	}
+	emailtoken, err := helpermodel.UpdateToken(userID)
+	if err != nil {
+		app.Response(http.StatusBadRequest, e.ERROR, nil)
+	}
+	// send email
+	app.Response(http.StatusOK, e.SUCCESS, emailtoken)
+}

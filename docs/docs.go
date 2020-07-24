@@ -763,6 +763,10 @@ var doc = `{
         "apiModel.UserRegistParam": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "my_email@example.com"
+                },
                 "password": {
                     "type": "string",
                     "example": "my_password"
@@ -827,6 +831,10 @@ var doc = `{
         "apimodel.UserRegistParam": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "my_email@example.com"
+                },
                 "password": {
                     "type": "string",
                     "example": "my_password"

@@ -34,12 +34,13 @@ func RegistUser(username string, password string, email string, admin bool) (*Us
 
 	passwordMD5 := utils.MD5V([]byte(password))
 	var user = User{
-		Username: username,
-		Password: passwordMD5,
-		Admin:    admin,
-		Active:   false,
-		Score:    0,
-		Email:    email,
+		Username:    username,
+		Password:    passwordMD5,
+		Admin:       admin,
+		Active:      false,
+		Score:       0,
+		Email:       email,
+		Certificate: false,
 	}
 	if notExist := tx.Where("username = ?", username).First(&user).RecordNotFound(); !notExist {
 		return nil, e.ErrUserExist

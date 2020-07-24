@@ -38,6 +38,9 @@ definitions:
     type: object
   apiModel.UserRegistParam:
     properties:
+      email:
+        example: my_email@example.com
+        type: string
       password:
         example: my_password
         type: string
@@ -81,6 +84,9 @@ definitions:
     type: object
   apimodel.UserRegistParam:
     properties:
+      email:
+        example: my_email@example.com
+        type: string
       password:
         example: my_password
         type: string

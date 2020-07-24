@@ -44,15 +44,57 @@ func HandleToken(token string) error {
 		return fmt.Errorf("haven't regist yet: %w", err)
 	}
 	if time.Now().After(emailtoken.Expireat) {
-		// CreateToken(userID) create a token on database
+		UpdateToken(userID)
 		// Send email with new token link
 	} else if token != emailtoken.Token {
 		// wrong certification
-		// a click if need a new token link => a route that leads to CreateToken
+		// a click if need a new token link => a route that leads to UpdateToken
 		// Send email with new token link
 	} else {
 		// success
 		// active -> true (or certificate - > true?, should add login condition at jwt)
 	}
 	return nil
+}
+
+func CreateToken(userID uint) (*Emailtoken, error) {
+	token, err := EncodeToken(userID)
+	if err != nil {
+		return nil, fmt.Errorf("token generate failed: %w", err)
+	}
+	emailtoken := Emailtoken{
+		UserID:   userID,
+		Token:    token,
+		Expireat: time.Now().Add(time.Hour * 24),
+	}
+	tx := db.LilHelperDB.Begin()
+	defer tx.RollbackUnlessCommitted()
+
+	if err := tx.Create(&emailtoken).Error; err != nil {
+		return nil, fmt.Errorf("token creation failed: %w", err)
+	}
+	tx.Commit()
+
+	return &emailtoken, nil
+}
+
+func UpdateToken(userID uint) (*Emailtoken, error) {
+	token, err := EncodeToken(userID)
+	if err != nil {
+		return nil, fmt.Errorf("token generate failed: %w", err)
+	}
+	emailtoken := Emailtoken{}
+	updateEmailtoken := Emailtoken{
+		Token:    token,
+		Expireat: time.Now().Add(time.Hour * 24),
+	}
+	tx := db.LilHelperDB.Begin()
+	defer tx.RollbackUnlessCommitted()
+
+	if err := tx.Model(&token).Updates(updateEmailtoken).Error; err != nil {
+		return nil, fmt.Errorf("token update failed: %w", err)
+	}
+	tx.Commit()
+
+	return &emailtoken, nil
 }
