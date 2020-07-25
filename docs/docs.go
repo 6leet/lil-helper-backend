@@ -302,6 +302,37 @@ var doc = `{
                 }
             }
         },
+        "/admin/reorganize": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "update mission table (active, inactive)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/apiModel.JsonObjectArray"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/admin/screenshots": {
             "get": {
                 "produces": [
@@ -728,9 +759,17 @@ var doc = `{
                 "active": {
                     "type": "boolean"
                 },
+                "active_at": {
+                    "type": "string",
+                    "example": "2020-02-02"
+                },
                 "content": {
                     "type": "string",
                     "example": "this is a content"
+                },
+                "inactive_at": {
+                    "type": "string",
+                    "example": "2020-02-02"
                 },
                 "picture": {
                     "type": "string",
@@ -887,7 +926,13 @@ var doc = `{
                 "active": {
                     "type": "boolean"
                 },
+                "activeat": {
+                    "type": "string"
+                },
                 "content": {
+                    "type": "string"
+                },
+                "inactiveat": {
                     "type": "string"
                 },
                 "picture": {

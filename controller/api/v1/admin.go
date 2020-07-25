@@ -75,7 +75,7 @@ func CreateMission(c *gin.Context) {
 	// 	fmt.Println("error on unmarshal")
 	// }
 	// fmt.Println(weight)
-	mission, err := helpermodel.CreateMission(userID, params.Content, params.Picture, string(weightjson), params.Score)
+	mission, err := helpermodel.CreateMission(userID, params.Content, params.Picture, string(weightjson), params.Score, params.Activeat, params.Inactiveat)
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else if err != nil {
@@ -150,7 +150,7 @@ func UpdateMission(c *gin.Context) {
 
 	weightjson, _ := json.Marshal(params.Weight)
 
-	mission, err := helpermodel.UpdateMission(missionID, params.Content, params.Picture, string(weightjson), params.Score, params.Active)
+	mission, err := helpermodel.UpdateMission(missionID, params.Content, params.Picture, string(weightjson), params.Score, params.Active, params.Activeat, params.Inactiveat)
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else if err != nil {
@@ -311,4 +311,20 @@ func BanHelper(c *gin.Context) {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	}
 	app.Response(http.StatusOK, e.SUCCESS, userID)
+}
+
+// ReorganizeMission ...
+// @Tags Admin
+// @Summary update mission table (active, inactive)
+// @Produce application/json
+// @Success 200 {object} handler.Response{data=apiModel.JsonObjectArray}
+// @Router /admin/reorganize [get]
+func ReorganizeMission(c *gin.Context) {
+	app := handler.Gin{C: c}
+
+	if err := helpermodel.ReorganizeMission(); err != nil {
+		app.Response(http.StatusInternalServerError, e.ERROR, nil)
+		return
+	}
+	app.Response(http.StatusOK, e.SUCCESS, nil)
 }

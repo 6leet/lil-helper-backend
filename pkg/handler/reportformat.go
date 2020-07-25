@@ -68,6 +68,22 @@ func (g *Gin) SetJwtCookie(token string, expire time.Time, config config.JwtConf
 	)
 }
 
+func (g *Gin) SetCookie(cookieName string, cookie string, expire time.Time, config config.JwtConfig) {
+	maxage := int(expire.Unix() - time.Now().Unix())
+	if int(config.MaxRefresh.Seconds()) > maxage {
+		maxage = int(config.MaxRefresh.Seconds())
+	}
+	g.C.SetCookie(
+		cookieName,
+		cookie,
+		maxage,
+		config.CookiePath,
+		config.CookieDomain,
+		config.SecureCookie,
+		config.CookieHTTPOnly,
+	)
+}
+
 func (g *Gin) Redirect(path string) {
 	g.C.Redirect(http.StatusMovedPermanently, path)
 	return

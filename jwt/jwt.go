@@ -64,6 +64,7 @@ func init() {
 
 		// done
 		Authenticator: func(c *gin.Context) (interface{}, error) {
+			app := handler.Gin{C: c}
 			var loginVals apimodel.LoginParam
 			if err := c.ShouldBind(&loginVals); err != nil {
 				return nil, jwt.ErrMissingLoginValues
@@ -73,6 +74,8 @@ func init() {
 
 			// to-do: login function (database)
 			if user, err := helpermodel.Login(username, password); err == nil {
+				app.SetCookie("userUID", user.UID, time.Now().Add(config.Timeout), config)
+				app.SetCookie("nickname", user.Nickname, time.Now().Add(config.Timeout), config)
 				return user, nil
 			} else if errors.Unwrap(err) != nil {
 				return nil, jwt.ErrFailedTokenCreation

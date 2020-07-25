@@ -3,11 +3,14 @@ package helpermodel
 import (
 	"encoding/json"
 	"fmt"
-	"lil-helper-backend/config"
 	"lil-helper-backend/db"
+	"lil-helper-backend/goroutine"
 	"lil-helper-backend/hashids"
 	"lil-helper-backend/pkg/e"
+	"lil-helper-backend/pkg/utils"
+	"time"
 
+	"github.com/jasonlvhit/gocron"
 	"github.com/jinzhu/gorm"
 	"github.com/jmcvetta/randutil"
 )
@@ -35,13 +38,15 @@ func (m *Mission) Public() PublicMission {
 	return p
 }
 
-func CreateMission(userID uint, content string, picture string, weightstr string, score int) (*Mission, error) {
+func CreateMission(userID uint, content string, picture string, weightstr string, score int, activeat string, inactiveat string) (*Mission, error) {
 	mission := Mission{
-		Content: content,
-		Picture: picture,
-		Weight:  weightstr,
-		Score:   score,
-		Active:  true,
+		Content:    content,
+		Picture:    picture,
+		Weight:     weightstr,
+		Score:      score,
+		Active:     false,
+		Activeat:   utils.ParseTime(activeat),
+		Inactiveat: utils.ParseTime(inactiveat),
 	}
 
 	tx := db.LilHelperDB.Begin()
@@ -62,19 +67,22 @@ func CreateMission(userID uint, content string, picture string, weightstr string
 	if err := json.Unmarshal([]byte(mission.Weight), &weight); err != nil {
 		return nil, fmt.Errorf("json unmarshal weight failed: %w", err)
 	}
-	SetTotalMissionWeight(weight, 1)
+	// SetTotalMissionWeight(weight, 1)
 	return &mission, nil
 }
 
-func UpdateMission(id uint, content string, picture string, weight string, score int, active bool) (*Mission, error) {
+func UpdateMission(id uint, content string, picture string, weight string, score int, active bool, activeat string, inactiveat string) (*Mission, error) {
 	mission := Mission{}
 	updateMission := map[string]interface{}{
-		"content": content,
-		"picture": picture,
-		"weight":  weight,
-		"score":   score,
-		"active":  active,
+		"content":    content,
+		"picture":    picture,
+		"weight":     weight,
+		"score":      score,
+		"active":     active,
+		"activeat":   utils.ParseTime(activeat),
+		"inactiveat": utils.ParseTime(inactiveat),
 	}
+
 	tx := db.LilHelperDB.Begin()
 	defer tx.RollbackUnlessCommitted()
 	if err := tx.First(&mission, id).Error; err != nil {
@@ -131,11 +139,11 @@ func ActivateMission(id uint, active bool) (*Mission, error) {
 	if err := json.Unmarshal([]byte(mission.Weight), &weight); err != nil {
 		return nil, fmt.Errorf("json unmarshal weight failed: %w", err)
 	}
-	addvar := 1
-	if !active {
-		addvar = -1
-	}
-	SetTotalMissionWeight(weight, addvar)
+	// addvar := 1
+	// if !active {
+	// 	addvar = -1
+	// }
+	// SetTotalMissionWeight(weight, addvar)
 	return &mission, nil
 }
 
@@ -161,16 +169,16 @@ func GetMissionsWeight(level uint) ([]randutil.Choice, error) {
 	return choices, nil
 }
 
-func SetTotalMissionWeight(weight []int, addvar int) error {
-	VTool := config.VTool
-	config := config.Config.Mission
-	for i := 0; i <= config.Maxlevel; i++ {
-		config.Totalweight[i] = config.Totalweight[i] + weight[i]*addvar
-	}
-	VTool.Set("mission.totalweight", config.Totalweight)
-	VTool.WriteConfig()
-	return nil
-}
+// func SetTotalMissionWeight(weight []int, addvar int) error {
+// 	VTool := config.VTool
+// 	config := config.Config.Mission
+// 	for i := 0; i <= config.Maxlevel; i++ {
+// 		config.Totalweight[i] = config.Totalweight[i] + weight[i]*addvar
+// 	}
+// 	VTool.Set("mission.totalweight", config.Totalweight)
+// 	VTool.WriteConfig()
+// 	return nil
+// }
 
 func GetMission(id uint) (*Mission, error) {
 	mission := Mission{}
@@ -183,4 +191,47 @@ func GetMission(id uint) (*Mission, error) {
 	} else {
 		return &mission, nil
 	}
+}
+
+func ReorganizeMission() error {
+	missions := []Mission{}
+	// activateMission := map[string]interface{}{
+	// 	"active": true,
+	// }
+	// inactivateMission := map[string]interface{}{
+	// 	"active": false,
+	// }
+	currentDate := time.Now().String()[0:10]
+	fmt.Println(currentDate)
+
+	tx := db.LilHelperDB.Begin()
+	defer tx.RollbackUnlessCommitted()
+
+	if err := tx.Where("activeat = ?", currentDate).Find(&missions).Error; err != nil {
+		return fmt.Errorf("Missions query failed: %w", err)
+	}
+	fmt.Println("activate", missions)
+	if err := tx.Model(&missions).Update("active", true).Error; err != nil {
+		return fmt.Errorf("Missions activation failed: %w", err)
+	}
+	if err := tx.Where("inactiveat = ?", currentDate).Find(&missions).Error; err != nil {
+		return fmt.Errorf("Missions query failed: %w", err)
+	}
+	fmt.Println("inactivate", missions)
+	if err := tx.Model(&missions).Updates("active", false).Error; err != nil {
+		return fmt.Errorf("Missions inactivation failed: %w", err)
+	}
+
+	tx.Commit()
+	return nil
+}
+
+func AutoReorganizeMission() error {
+	gocron.Every(1).Day().At("00:00").Do(func() {
+		fmt.Println("auto-reorganizing mission")
+		ReorganizeMission()
+	})
+	<-gocron.Start()
+	goroutine.Wg.Done()
+	return nil
 }

@@ -16,6 +16,7 @@ func InitAdminRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 		AdminRouter.GET("screenshots", v1.GetAllScreenshots)
 		AdminRouter.GET("helpers", v1.GetHelpers)
 		AdminRouter.GET("missions", v1.GetMissions)
+		AdminRouter.GET("reorganize", v1.ReorganizeMission)
 
 		AdminRouter.POST("regist", v1.RegistAdmin)
 		AdminRouter.POST("mission", v1.CreateMission)

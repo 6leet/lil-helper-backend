@@ -25,9 +25,10 @@ type LilHelperJwtConfig struct {
 }
 
 type MissionConfig struct {
-	Maxlevel    int
-	Levelsexp   []int
-	Totalweight []int
+	Maxlevel  int
+	Levelsexp []int
+	Weight    map[string][]int
+	Updateat  int
 }
 
 type DatabaseConfig struct {
@@ -89,6 +90,7 @@ func init() {
 	v.SetConfigName("lilhelper")
 	v.SetConfigType("toml")
 	v.AddConfigPath("static/config/")
+	Config.Mission.Weight = make(map[string][]int)
 	if err := v.ReadInConfig(); err != nil {
 		panic(fmt.Errorf("read config file failed: %w \n", err))
 	} else if err := v.Unmarshal(&Config); err != nil {

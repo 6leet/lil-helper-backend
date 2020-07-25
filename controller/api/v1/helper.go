@@ -177,6 +177,7 @@ func DeleteScreenshot(c *gin.Context) {
 	}
 }
 
+// not used
 func UpdateToken(c *gin.Context) {
 	app := handler.Gin{C: c}
 	var user *helpermodel.User

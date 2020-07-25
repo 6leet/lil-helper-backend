@@ -11,6 +11,7 @@ type User struct {
 	UID         string `gorm:""`
 	Username    string `gorm:"unique_index;not null"`
 	Password    string `gorm:"not null"`
+	Nickname    string `gorm:"default:'__nickname__'"`
 	Admin       bool   `gorm:"default:false"`
 	Active      bool   `gorm:"not null;default:true"`
 	Score       int    `gorm:"default:0"`
@@ -22,12 +23,14 @@ type User struct {
 
 type Mission struct {
 	gorm.Model
-	UID     string `gorm:""`
-	Content string `gorm:"not null"`
-	Picture string `gorm:"not null"`
-	Weight  string `gorm:"not null"`
-	Score   int    `gorm:"not null"`
-	Active  bool   `gorm:"default:true"`
+	UID        string    `gorm:""`
+	Content    string    `gorm:"not null"`
+	Picture    string    `gorm:"not null"`
+	Weight     string    `gorm:"not null"`
+	Score      int       `gorm:"not null"`
+	Active     bool      `gorm:"default:false"`
+	Activeat   time.Time `gorm:""`
+	Inactiveat time.Time `gorm:""`
 }
 
 type Screenshot struct {

@@ -15,8 +15,14 @@ definitions:
     properties:
       active:
         type: boolean
+      active_at:
+        example: "2020-02-02"
+        type: string
       content:
         example: this is a content
+        type: string
+      inactive_at:
+        example: "2020-02-02"
         type: string
       picture:
         example: this/is/a/path/of/picture.jpg
@@ -123,7 +129,11 @@ definitions:
     properties:
       active:
         type: boolean
+      activeat:
+        type: string
       content:
+        type: string
+      inactiveat:
         type: string
       picture:
         type: string
@@ -330,6 +340,23 @@ paths:
                   $ref: '#/definitions/helperModel.PublicUser'
               type: object
       summary: user registration
+      tags:
+      - Admin
+  /admin/reorganize:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apiModel.JsonObjectArray'
+              type: object
+      summary: update mission table (active, inactive)
       tags:
       - Admin
   /admin/screenshots:
