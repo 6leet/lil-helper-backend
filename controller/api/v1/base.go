@@ -46,7 +46,7 @@ func Regist(c *gin.Context) {
 // @Success 200 {object} handler.Response{data=apimodel.LoginResData}
 // @Router /base/login [post]
 func Login(c *gin.Context) {
-	jwt.Jwt.LoginHandler(c)
+	jwt.HelperJwt.LoginHandler(c)
 }
 
 // RefreshToken ...
@@ -56,5 +56,5 @@ func Login(c *gin.Context) {
 // @Success 200 {object} handler.Response{data=apimodel.LoginResData}
 // @Router /base/refresh-token [get]
 func RefreshToken(c *gin.Context) {
-	jwt.Jwt.RefreshHandler(c)
+	jwt.HelperJwt.RefreshHandler(c)
 }

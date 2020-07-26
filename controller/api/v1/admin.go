@@ -322,9 +322,10 @@ func BanHelper(c *gin.Context) {
 func ReorganizeMission(c *gin.Context) {
 	app := handler.Gin{C: c}
 
-	if err := helpermodel.ReorganizeMission(); err != nil {
+	stat, err := helpermodel.ReorganizeMission()
+	if err != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 		return
 	}
-	app.Response(http.StatusOK, e.SUCCESS, nil)
+	app.Response(http.StatusOK, e.SUCCESS, stat)
 }

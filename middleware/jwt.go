@@ -7,5 +7,5 @@ import (
 )
 
 func Jwt() gin.HandlerFunc {
-	return jwt.Jwt.MiddlewareFunc()
+	return jwt.HelperJwt.MiddlewareFunc()
 }

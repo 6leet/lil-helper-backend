@@ -2,6 +2,7 @@ package v1
 
 import (
 	"errors"
+	"fmt"
 	"lil-helper-backend/hashids"
 	apimodel "lil-helper-backend/model/apiModel"
 	helpermodel "lil-helper-backend/model/helperModel"
@@ -32,10 +33,10 @@ func GetMission(c *gin.Context) { // need: userID
 		app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
 		return
 	}
-	if assignment, err := helpermodel.GetAssignment(userID); assignment != nil {
+	if assignment, err := helpermodel.GetAssignment(userID); assignment != nil { // if assignment exist
 		mission, err := helpermodel.GetMission(assignment.MissionID)
 		if err != nil {
-			app.Response(http.StatusBadRequest, e.ERR_NO_SUCH_MISSION, nil)
+			app.Response(http.StatusBadRequest, e.ERR_NO_SUCH_MISSION, nil) // mission expired
 			return
 		}
 		app.Response(http.StatusOK, e.SUCCESS, mission.Public())
@@ -46,21 +47,24 @@ func GetMission(c *gin.Context) { // need: userID
 			app.Response(http.StatusBadRequest, e.ERROR, nil)
 			return
 		}
+		if len(choices) == 0 {
+			fmt.Println("no mission exists")
+			app.Response(http.StatusBadRequest, e.ERR_NO_SUCH_MISSION, nil)
+			return
+		}
 		choice, err := randutil.WeightedChoice(choices)
 		if err != nil {
 			app.Response(http.StatusBadRequest, e.ERROR, nil)
 			return
 		}
 		mission, _ := choice.Item.(helpermodel.Mission)
-		missionID, err := hashids.DecodeMissionUID(mission.UID)
+		missionID, _ := hashids.DecodeMissionUID(mission.UID)
 		if err := helpermodel.CreateAssignment(userID, missionID); err != nil {
 			app.Response(http.StatusBadRequest, e.ERROR, nil)
 			return
 		}
 		app.Response(http.StatusOK, e.SUCCESS, mission.Public())
 	}
-
-	// mission := helpermodel.Mission{}
 }
 
 // GetScreenshots ...

@@ -16,7 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var Jwt jwt.GinJWTMiddleware
+var HelperJwt jwt.GinJWTMiddleware
 
 func init() {
 	config := config.UserJwt
@@ -134,6 +134,6 @@ func init() {
 	if err != nil {
 		panic("JWT Error:" + err.Error())
 	} else {
-		Jwt = *authMiddleware
+		HelperJwt = *authMiddleware
 	}
 }

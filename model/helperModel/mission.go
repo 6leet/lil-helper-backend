@@ -3,6 +3,7 @@ package helpermodel
 import (
 	"encoding/json"
 	"fmt"
+	"lil-helper-backend/config"
 	"lil-helper-backend/db"
 	"lil-helper-backend/goroutine"
 	"lil-helper-backend/hashids"
@@ -23,6 +24,11 @@ type PublicMission struct {
 	Score   int    `json:"score"`
 	Date    string `json:"date"`
 	Active  bool   `json:"active"`
+}
+
+type MissionsStat struct {
+	Active   []string `json:"active"`
+	Inactive []string `json:"inactive"`
 }
 
 func (m *Mission) Public() PublicMission {
@@ -193,37 +199,76 @@ func GetMission(id uint) (*Mission, error) {
 	}
 }
 
-func ReorganizeMission() error {
-	missions := []Mission{}
-	// activateMission := map[string]interface{}{
-	// 	"active": true,
-	// }
-	// inactivateMission := map[string]interface{}{
-	// 	"active": false,
-	// }
+func ReorganizeMission() (*MissionsStat, error) {
+	VTool := config.VTool
+	config := config.Config.Mission
+	activeMissions := []Mission{}
+	inactiveMissions := []Mission{}
 	currentDate := time.Now().String()[0:10]
 	fmt.Println(currentDate)
 
+	var active, inactive []string
+
 	tx := db.LilHelperDB.Begin()
 	defer tx.RollbackUnlessCommitted()
+	activeQuery := tx.Where("activeat = ?", currentDate)
+	if err := activeQuery.Error; err != nil {
+		return nil, fmt.Errorf("Missions query failed: %w", err)
+	}
+	if err := activeQuery.Model(&activeMissions).Update("active", true).Error; err != nil {
+		return nil, fmt.Errorf("Missions activation failed: %w", err)
+	}
+	activeQuery.Find(&activeMissions)
+	// if err := tx.Where("activeat = ?", currentDate).Find(&activeMissions).Error; err != nil {
+	// 	return nil, fmt.Errorf("Missions query failed: %w", err)
+	// }
+	// fmt.Println("activate", activeMissions)
+	// if err := tx.Model(&activeMissions).Update("active", true).Error; err != nil {
+	// 	return nil, fmt.Errorf("Missions activation failed: %w", err)
+	// }
+	for _, m := range activeMissions {
+		var weight []int
+		if err := json.Unmarshal([]byte(m.Weight), &weight); err != nil {
+			return nil, fmt.Errorf("json unmarshal weight failed: %w", err)
+		}
+		config.Weight[m.UID] = weight
+		active = append(active, m.UID)
+	}
 
-	if err := tx.Where("activeat = ?", currentDate).Find(&missions).Error; err != nil {
-		return fmt.Errorf("Missions query failed: %w", err)
+	inactiveQuery := tx.Where("inactiveat = ?", currentDate)
+	if err := inactiveQuery.Error; err != nil {
+		return nil, fmt.Errorf("Missions query failed: %w", err)
 	}
-	fmt.Println("activate", missions)
-	if err := tx.Model(&missions).Update("active", true).Error; err != nil {
-		return fmt.Errorf("Missions activation failed: %w", err)
+	if err := inactiveQuery.Model(&inactiveMissions).Update("active", false).Error; err != nil {
+		return nil, fmt.Errorf("Missions inactivation failed: %w", err)
 	}
-	if err := tx.Where("inactiveat = ?", currentDate).Find(&missions).Error; err != nil {
-		return fmt.Errorf("Missions query failed: %w", err)
-	}
-	fmt.Println("inactivate", missions)
-	if err := tx.Model(&missions).Updates("active", false).Error; err != nil {
-		return fmt.Errorf("Missions inactivation failed: %w", err)
+	inactiveQuery.Find(&inactiveMissions)
+
+	// if err := tx.Where("inactiveat = ?", currentDate).Find(&inactiveMissions).Error; err != nil {
+	// 	return nil, fmt.Errorf("Missions query failed: %w", err)
+	// }
+	// fmt.Println("inactivate", inactiveMissions)
+	// if err := tx.Model(&inactiveMissions).Update("active", false).Error; err != nil {
+	// 	return nil, fmt.Errorf("Missions inactivation failed: %w", err)
+	// }
+	for _, m := range inactiveMissions {
+		_, ok := config.Weight[m.UID]
+		if ok {
+			delete(config.Weight, m.UID)
+		}
+		inactive = append(inactive, m.UID)
 	}
 
+	VTool.Set("mission.totalweight", config.Weight)
+	VTool.WriteConfig()
 	tx.Commit()
-	return nil
+
+	stat := MissionsStat{
+		Active:   active,
+		Inactive: inactive,
+	}
+
+	return &stat, nil
 }
 
 func AutoReorganizeMission() error {
