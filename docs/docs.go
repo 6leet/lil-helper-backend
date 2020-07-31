@@ -25,6 +25,36 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/autotime": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "set mission table update time",
+                "parameters": [
+                    {
+                        "description": "auto time params",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.SetAutoTimeParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/helpers": {
             "get": {
                 "produces": [
@@ -864,6 +894,17 @@ var doc = `{
                 "token": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsiOjE1ODU2nVpZCI6IVzZXJuYW1lIjoic3RyaW5nIn0.HbrhJbblrWLVqle6TI19bGX78ki4x5x1Wxs"
+                }
+            }
+        },
+        "apimodel.SetAutoTimeParams": {
+            "type": "object",
+            "properties": {
+                "hour": {
+                    "type": "integer"
+                },
+                "minute": {
+                    "type": "integer"
                 }
             }
         },

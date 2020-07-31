@@ -9,9 +9,9 @@ import (
 	"lil-helper-backend/hashids"
 	"lil-helper-backend/pkg/e"
 	"lil-helper-backend/pkg/utils"
+	"lil-helper-backend/scheduler"
 	"time"
 
-	"github.com/jasonlvhit/gocron"
 	"github.com/jinzhu/gorm"
 	"github.com/jmcvetta/randutil"
 )
@@ -271,12 +271,17 @@ func ReorganizeMission() (*MissionsStat, error) {
 	return &stat, nil
 }
 
-func AutoReorganizeMission() error {
-	gocron.Every(1).Day().At("00:00").Do(func() {
-		fmt.Println("auto-reorganizing mission")
-		ReorganizeMission()
+func AutoReorganizeMission(str string) error {
+	// updateat := config.Config.Mission.Updateat
+	fmt.Println("do auto")
+	scheduler.Cron.Every(1).Second().At("00:00").Do(func() {
+		fmt.Println(str)
+		// fmt.Println("auto-reorganizing mission")
+		// ReorganizeMission()
 	})
-	<-gocron.Start()
+	<-scheduler.Cron.Start()
+	fmt.Println("hellllllo")
 	goroutine.Wg.Done()
+	fmt.Println("wg done done done")
 	return nil
 }

@@ -9,3 +9,8 @@ type SetMissionParams struct {
 	Activeat   string `json:"active_at" example:"2020-02-02"`
 	Inactiveat string `json:"inactive_at" example:"2020-02-02"`
 }
+
+type SetAutoTimeParams struct {
+	Hour   int `json:"hour`
+	Minute int `json:"minute"`
+}

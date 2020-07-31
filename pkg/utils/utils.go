@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"lil-helper-backend/config"
 	"strconv"
 	"time"
 )
@@ -14,7 +13,5 @@ func ParseTime(timestr string) time.Time {
 	fmt.Println(month)
 	day, _ := strconv.Atoi(timestr[8:10])
 	fmt.Println(day)
-	hour := config.Config.Mission.Updateat
-	fmt.Println(hour)
-	return time.Date(year, time.Month(month), day, hour, 0, 0, 0, time.UTC).Add(time.Hour * -8)
+	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).Add(time.Hour * -8)
 }

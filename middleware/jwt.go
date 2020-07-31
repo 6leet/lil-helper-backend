@@ -6,6 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Jwt() gin.HandlerFunc {
+func HelperJwt() gin.HandlerFunc {
 	return jwt.HelperJwt.MiddlewareFunc()
+}
+
+func AdminJwt() gin.HandlerFunc {
+	return jwt.AdminJwt.MiddlewareFunc()
 }

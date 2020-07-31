@@ -28,7 +28,7 @@ type MissionConfig struct {
 	Maxlevel  int
 	Levelsexp []int
 	Weight    map[string][]int
-	Updateat  int
+	Updateat  string
 }
 
 type DatabaseConfig struct {
@@ -107,6 +107,9 @@ func init() {
 	UserJwt = Config.Jwt.User.JwtConfig()
 	if Config.Domain == "" {
 		Config.Domain = "127.0.0.1:8080"
+	}
+	if Config.Mission.Updateat == "" {
+		Config.Mission.Updateat = "00:00"
 	}
 	VTool = v
 }

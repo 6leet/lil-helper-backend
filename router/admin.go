@@ -9,7 +9,7 @@ import (
 
 func InitAdminRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	AdminRouter := Router.Group("admin")
-	AdminRouter.Use(middleware.Jwt())
+	AdminRouter.Use(middleware.AdminJwt())
 	{
 		// to do: missions are now without route path
 
@@ -22,6 +22,7 @@ func InitAdminRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 		AdminRouter.POST("mission", v1.CreateMission)
 		AdminRouter.POST("missions/:uid", v1.UpdateMission)
 		AdminRouter.POST("screenshots/:uid", v1.SetScreenshotApprove)
+		AdminRouter.POST("autotime", v1.SetAutoTime)
 
 		AdminRouter.DELETE("missions/:uid", v1.DeleteMission)
 		AdminRouter.DELETE("helpers/:uid", v1.BanHelper)

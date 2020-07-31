@@ -9,7 +9,7 @@ import (
 
 func InitCommonRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	CommonRouter := Router.Group("")
-	CommonRouter.Use(middleware.Jwt())
+	CommonRouter.Use(middleware.HelperJwt())
 	{
 		CommonRouter.GET("helpers", v1.GetTopScoreHelpers)
 	}

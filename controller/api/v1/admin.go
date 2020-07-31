@@ -3,12 +3,16 @@ package v1
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"lil-helper-backend/config"
 	"lil-helper-backend/hashids"
 	apimodel "lil-helper-backend/model/apiModel"
 	helpermodel "lil-helper-backend/model/helperModel"
 	"lil-helper-backend/pkg/e"
 	"lil-helper-backend/pkg/handler"
+	"lil-helper-backend/scheduler"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -328,4 +332,38 @@ func ReorganizeMission(c *gin.Context) {
 		return
 	}
 	app.Response(http.StatusOK, e.SUCCESS, stat)
+}
+
+// SetAutoTime ...
+// @Tags Admin
+// @Summary set mission table update time
+// @Produce application/json
+// @Param data body apimodel.SetAutoTimeParams true "auto time params"
+// @Success 200 string string
+// @Router /admin/autotime [post]
+func SetAutoTime(c *gin.Context) {
+	app := handler.Gin{C: c}
+
+	var params apimodel.SetAutoTimeParams
+	if err := c.BindJSON(&params); err != nil {
+		app.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
+	}
+	if params.Hour < 0 || params.Hour > 23 || params.Minute < 0 || params.Minute > 59 {
+		app.Response(http.StatusBadRequest, e.ERROR, nil)
+		return
+	}
+
+	fmt.Println(params.Hour, params.Minute)
+
+	VTool := config.VTool
+	config := config.Config.Mission
+	Cron := scheduler.Cron
+	config.Updateat = strconv.Itoa(params.Hour) + ":" + strconv.Itoa(params.Minute)
+	VTool.Set("mission.updateat", config.Updateat)
+	VTool.WriteConfig()
+	Cron.Clear()
+	go helpermodel.AutoReorganizeMission(config.Updateat)
+	app.Response(http.StatusOK, e.SUCCESS, config.Updateat)
+	return
 }

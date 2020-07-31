@@ -16,7 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var HelperJwt jwt.GinJWTMiddleware
+var AdminJwt jwt.GinJWTMiddleware
 
 func init() {
 	config := config.UserJwt
@@ -32,13 +32,13 @@ func init() {
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			fmt.Println("check")
 			fmt.Println(identityKey)
-			var username string = "username"
 			if u, ok := data.(*helpermodel.User); ok {
 				return jwt.MapClaims{
 					identityKey: u.UID,
-					username:    u.Username,
+					"username":  u.Username,
 					"admin":     u.Admin,
 					"nonce":     u.UpdatedAt.Unix(),
+					"nickname":  u.Nickname,
 				}
 			}
 			return jwt.MapClaims{}
@@ -55,6 +55,8 @@ func init() {
 				return nil
 			} else if nonce, ok := claims["nonce"].(float64); !ok {
 				return nil
+			} else if !user.Admin {
+				return nil
 			} else if !user.Active || int64(user.UpdatedAt.Unix()) > int64(nonce) {
 				return nil
 			} else {
@@ -64,7 +66,6 @@ func init() {
 
 		// done
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			app := handler.Gin{C: c}
 			var loginVals apimodel.LoginParam
 			if err := c.ShouldBind(&loginVals); err != nil {
 				return nil, jwt.ErrMissingLoginValues
@@ -74,8 +75,8 @@ func init() {
 
 			// to-do: login function (database)
 			if user, err := helpermodel.Login(username, password); err == nil {
-				app.SetCookie("userUID", user.UID, time.Now().Add(config.Timeout), config)
-				app.SetCookie("nickname", user.Nickname, time.Now().Add(config.Timeout), config)
+				// app.SetCookie("userUID", user.UID, time.Now().Add(config.Timeout), config)
+				// app.SetCookie("nickname", "__admin__", time.Now().Add(config.Timeout), config)
 				return user, nil
 			} else if errors.Unwrap(err) != nil {
 				return nil, jwt.ErrFailedTokenCreation
@@ -88,6 +89,10 @@ func init() {
 			app := handler.Gin{C: c}
 			data := apimodel.LoginResData{Token: token, Expire: expire.Format(time.RFC3339)}
 			app.SetJwtCookie(token, expire, config)
+
+			claims := jwt.ExtractClaims(c)
+			app.SetCookie("userUID", claims[identityKey].(string), expire, config)
+			app.SetCookie("nickname", "__admin__", expire, config)
 			app.Response(http.StatusOK, e.SUCCESS, data)
 		},
 		RefreshResponse: func(c *gin.Context, code int, token string, expire time.Time) {
@@ -134,6 +139,6 @@ func init() {
 	if err != nil {
 		panic("JWT Error:" + err.Error())
 	} else {
-		HelperJwt = *authMiddleware
+		AdminJwt = *authMiddleware
 	}
 }

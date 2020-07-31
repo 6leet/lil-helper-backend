@@ -9,7 +9,7 @@ import (
 
 func InitHelperRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	HelperRouter := Router.Group("helper")
-	HelperRouter.Use(middleware.Jwt())
+	HelperRouter.Use(middleware.HelperJwt())
 	{
 		HelperRouter.GET("mission", v1.GetMission)
 		HelperRouter.GET("screenshots", v1.GetScreenshots)

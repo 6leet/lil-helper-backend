@@ -89,6 +89,13 @@ definitions:
         example: eyJhbGciOiJIUzI1NiIkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsiOjE1ODU2nVpZCI6IVzZXJuYW1lIjoic3RyaW5nIn0.HbrhJbblrWLVqle6TI19bGX78ki4x5x1Wxs
         type: string
     type: object
+  apimodel.SetAutoTimeParams:
+    properties:
+      hour:
+        type: integer
+      minute:
+        type: integer
+    type: object
   apimodel.UserRegistParam:
     properties:
       email:
@@ -178,6 +185,25 @@ info:
   title: lil-helper swagger API
   version: 0.0.1
 paths:
+  /admin/autotime:
+    post:
+      parameters:
+      - description: auto time params
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.SetAutoTimeParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: set mission table update time
+      tags:
+      - Admin
   /admin/helpers:
     get:
       parameters:
