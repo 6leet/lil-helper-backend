@@ -12,7 +12,6 @@ import (
 	"lil-helper-backend/pkg/handler"
 	"lil-helper-backend/scheduler"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -359,7 +358,7 @@ func SetAutoTime(c *gin.Context) {
 	VTool := config.VTool
 	config := config.Config.Mission
 	Cron := scheduler.Cron
-	config.Updateat = strconv.Itoa(params.Hour) + ":" + strconv.Itoa(params.Minute)
+	config.Updateat = fmt.Sprintf("%02d", params.Hour) + ":" + fmt.Sprintf("%02d", params.Minute)
 	VTool.Set("mission.updateat", config.Updateat)
 	VTool.WriteConfig()
 	Cron.Clear()
