@@ -271,17 +271,14 @@ func ReorganizeMission() (*MissionsStat, error) {
 	return &stat, nil
 }
 
-func AutoReorganizeMission(str string) error {
-	// updateat := config.Config.Mission.Updateat
-	fmt.Println("do auto")
-	scheduler.Cron.Every(1).Second().At("00:00").Do(func() {
-		fmt.Println(str)
-		// fmt.Println("auto-reorganizing mission")
-		// ReorganizeMission()
+func AutoReorganizeMission() error {
+	updateat := config.Config.Mission.Updateat
+	fmt.Println("do auto at", updateat)
+	scheduler.Cron.Every(1).Day().At(updateat).Do(func() {
+		fmt.Println("auto-reorganizing mission")
+		ReorganizeMission()
 	})
 	<-scheduler.Cron.Start()
-	fmt.Println("hellllllo")
 	goroutine.Wg.Done()
-	fmt.Println("wg done done done")
 	return nil
 }

@@ -34,6 +34,6 @@ func _main() {
 func main() {
 	goroutine.Wg.Add(2)
 	go _main()
-	go helpermodel.AutoReorganizeMission("12:12")
+	go helpermodel.AutoReorganizeMission()
 	goroutine.Wg.Wait()
 }

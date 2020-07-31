@@ -363,7 +363,7 @@ func SetAutoTime(c *gin.Context) {
 	VTool.Set("mission.updateat", config.Updateat)
 	VTool.WriteConfig()
 	Cron.Clear()
-	go helpermodel.AutoReorganizeMission(config.Updateat)
+	go helpermodel.AutoReorganizeMission()
 	app.Response(http.StatusOK, e.SUCCESS, config.Updateat)
 	return
 }
