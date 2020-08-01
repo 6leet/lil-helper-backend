@@ -170,13 +170,6 @@ var doc = `{
                         "required": true
                     },
                     {
-                        "type": "boolean",
-                        "description": "active",
-                        "name": "active",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
                         "type": "string",
                         "description": "active_at",
                         "name": "activeat",
@@ -283,13 +276,53 @@ var doc = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "title",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "content",
+                        "name": "content",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "weight",
+                        "name": "weight",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "score",
+                        "name": "score",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "activeat",
+                        "name": "activeat",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "inactiveat",
+                        "name": "inactiveat",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
                         "description": "set mission params",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/apiModel.SetMissionParams"
-                        }
+                        "name": "picture",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -898,42 +931,6 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "type": "object"
-                    }
-                }
-            }
-        },
-        "apiModel.SetMissionParams": {
-            "type": "object",
-            "properties": {
-                "active": {
-                    "type": "boolean"
-                },
-                "active_at": {
-                    "type": "string",
-                    "example": "2020-02-02"
-                },
-                "content": {
-                    "type": "string",
-                    "example": "this is a content"
-                },
-                "inactive_at": {
-                    "type": "string",
-                    "example": "2020-02-02"
-                },
-                "picture": {
-                    "type": "string"
-                },
-                "score": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string",
-                    "example": "this is a title"
-                },
-                "weight": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
                     }
                 }
             }

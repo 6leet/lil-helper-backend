@@ -95,14 +95,13 @@ func AddMissionPath(id uint, picture string) (*Mission, error) {
 	return &mission, nil
 }
 
-func UpdateMission(id uint, content string, picture string, weight string, score int, active bool, activeat string, inactiveat string) (*Mission, error) {
+func UpdateMission(id uint, title string, content string, weight string, score int, activeat string, inactiveat string) (*Mission, error) {
 	mission := Mission{}
 	updateMission := map[string]interface{}{
+		"title":      title,
 		"content":    content,
-		"picture":    picture,
 		"weight":     weight,
 		"score":      score,
-		"active":     active,
 		"activeat":   utils.ParseTime(activeat),
 		"inactiveat": utils.ParseTime(inactiveat),
 	}

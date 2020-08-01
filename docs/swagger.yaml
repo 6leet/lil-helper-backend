@@ -11,31 +11,6 @@ definitions:
           type: object
         type: array
     type: object
-  apiModel.SetMissionParams:
-    properties:
-      active:
-        type: boolean
-      active_at:
-        example: "2020-02-02"
-        type: string
-      content:
-        example: this is a content
-        type: string
-      inactive_at:
-        example: "2020-02-02"
-        type: string
-      picture:
-        type: string
-      score:
-        type: integer
-      title:
-        example: this is a title
-        type: string
-      weight:
-        items:
-          type: integer
-        type: array
-    type: object
   apiModel.UserRegistParam:
     properties:
       email:
@@ -268,11 +243,6 @@ paths:
         name: score
         required: true
         type: integer
-      - description: active
-        in: formData
-        name: active
-        required: true
-        type: boolean
       - description: active_at
         in: formData
         name: activeat
@@ -354,12 +324,41 @@ paths:
         name: uid
         required: true
         type: string
-      - description: set mission params
-        in: body
-        name: data
+      - description: title
+        in: formData
+        name: title
         required: true
-        schema:
-          $ref: '#/definitions/apiModel.SetMissionParams'
+        type: string
+      - description: content
+        in: formData
+        name: content
+        required: true
+        type: string
+      - description: weight
+        in: formData
+        name: weight
+        required: true
+        type: string
+      - description: score
+        in: formData
+        name: score
+        required: true
+        type: integer
+      - description: activeat
+        in: formData
+        name: activeat
+        required: true
+        type: string
+      - description: inactiveat
+        in: formData
+        name: inactiveat
+        required: true
+        type: string
+      - description: set mission params
+        in: formData
+        name: picture
+        required: true
+        type: file
       produces:
       - application/json
       responses:
