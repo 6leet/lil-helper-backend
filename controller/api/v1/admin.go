@@ -12,6 +12,7 @@ import (
 	"lil-helper-backend/pkg/handler"
 	"lil-helper-backend/scheduler"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -46,18 +47,26 @@ func RegistAdmin(c *gin.Context) { // done
 // CreateMission ...
 // @Tags Admin
 // @Summary create mission
-// @Produce application/json
-// @Param data body apiModel.SetMissionParams true "set mission params"
+// @Accept mpfd
+// @Produce mpfd
+// @Param title formData string true "title"
+// @Param content formData string true "content"
+// @Param weight formData string true "weight"
+// @Param score formData int true "score"
+// @Param active formData bool true "active"
+// @Param activeat formData string true "active_at"
+// @Param inactiveat formData string true "inactive_at"
+// @Param picture formData file true "set mission params"
 // @Success 200 {object} handler.Response{data=helpermodel.Mission}
 // @Router /admin/mission [post]
 func CreateMission(c *gin.Context) {
 	app := handler.Gin{C: c}
-	var params apimodel.SetMissionParams
-
-	if err := c.BindJSON(&params); err != nil {
-		app.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
-		return
-	}
+	title := c.Request.FormValue("title")
+	content := c.Request.FormValue("content")
+	weight := c.Request.FormValue("weight") // "[1,2,3,4,5,6,7,8,9,10]"
+	score, _ := strconv.Atoi(c.Request.FormValue("score"))
+	activeat := c.Request.FormValue("activeat")
+	inactiveat := c.Request.FormValue("inactiveat")
 
 	var user *helpermodel.User
 	if user = app.GetUser(); user == nil {
@@ -69,16 +78,9 @@ func CreateMission(c *gin.Context) {
 		return
 	}
 
-	// weightstr := apimodel.IntSliceToString(params.Weight)
-	weightjson, _ := json.Marshal(params.Weight)
-	// reverse operation json.Unmarshal(string(weightjson))
-	// var weight []int
-	// err := json.Unmarshal([]byte(string(weightjson)), &weight)
-	// if err != nil {
-	// 	fmt.Println("error on unmarshal")
-	// }
-	// fmt.Println(weight)
-	mission, err := helpermodel.CreateMission(userID, params.Content, params.Picture, string(weightjson), params.Score, params.Activeat, params.Inactiveat)
+	m, err := helpermodel.CreateMission(userID, title, content, weight, score, activeat, inactiveat)
+	path, err := helpermodel.UploadFile(app.C.Writer, app.C.Request, "mission", m.UID)
+	mission, err := helpermodel.AddMissionPath(m.ID, path)
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else if err != nil {
@@ -153,7 +155,7 @@ func UpdateMission(c *gin.Context) {
 
 	weightjson, _ := json.Marshal(params.Weight)
 
-	mission, err := helpermodel.UpdateMission(missionID, params.Content, params.Picture, string(weightjson), params.Score, params.Active, params.Activeat, params.Inactiveat)
+	mission, err := helpermodel.UpdateMission(missionID, params.Content, "params.Picture", string(weightjson), params.Score, params.Active, params.Activeat, params.Inactiveat)
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else if err != nil {

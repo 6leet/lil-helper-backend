@@ -25,23 +25,16 @@ definitions:
         example: "2020-02-02"
         type: string
       picture:
-        example: this/is/a/path/of/picture.jpg
         type: string
       score:
         type: integer
+      title:
+        example: this is a title
+        type: string
       weight:
         items:
           type: integer
         type: array
-    type: object
-  apiModel.SetScreenshotParams:
-    properties:
-      missionUID:
-        example: screenshot_missionUID
-        type: string
-      picture:
-        example: this/is/a/path/of/picture.jpg
-        type: string
     type: object
   apiModel.UserRegistParam:
     properties:
@@ -146,6 +139,8 @@ definitions:
         type: string
       score:
         type: integer
+      title:
+        type: string
       uid:
         type: string
       weight:
@@ -250,15 +245,51 @@ paths:
       - Admin
   /admin/mission:
     post:
+      consumes:
+      - multipart/form-data
       parameters:
-      - description: set mission params
-        in: body
-        name: data
+      - description: title
+        in: formData
+        name: title
         required: true
-        schema:
-          $ref: '#/definitions/apiModel.SetMissionParams'
+        type: string
+      - description: content
+        in: formData
+        name: content
+        required: true
+        type: string
+      - description: weight
+        in: formData
+        name: weight
+        required: true
+        type: string
+      - description: score
+        in: formData
+        name: score
+        required: true
+        type: integer
+      - description: active
+        in: formData
+        name: active
+        required: true
+        type: boolean
+      - description: active_at
+        in: formData
+        name: activeat
+        required: true
+        type: string
+      - description: inactive_at
+        in: formData
+        name: inactiveat
+        required: true
+        type: string
+      - description: set mission params
+        in: formData
+        name: picture
+        required: true
+        type: file
       produces:
-      - application/json
+      - multipart/form-data
       responses:
         "200":
           description: OK
@@ -565,15 +596,21 @@ paths:
       - Helper
   /helper/screenshot:
     post:
+      consumes:
+      - multipart/form-data
       parameters:
-      - description: set screenshot params
-        in: body
-        name: data
+      - description: missionuid
+        in: formData
+        name: missionuid
         required: true
-        schema:
-          $ref: '#/definitions/apiModel.SetScreenshotParams'
+        type: string
+      - description: picture file
+        in: formData
+        name: picture
+        required: true
+        type: file
       produces:
-      - application/json
+      - multipart/form-data
       responses:
         "200":
           description: OK

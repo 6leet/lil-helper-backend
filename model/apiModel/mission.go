@@ -1,8 +1,9 @@
 package apimodel
 
 type SetMissionParams struct {
+	Title      string `json:"title" example:"this is a title"`
 	Content    string `json:"content" example:"this is a content"`
-	Picture    string `json:"picture" example:"this/is/a/path/of/picture.jpg"`
+	Picture    string //path
 	Weight     []int  `json:"weight"`
 	Score      int    `json:"score"`
 	Active     bool   `json:"active"`

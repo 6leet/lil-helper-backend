@@ -29,11 +29,10 @@ func (s *Screenshot) Public() PublicScreenshot {
 	return p
 }
 
-func CreateScreenshot(userID uint, missionID uint, picture string) (*Screenshot, error) {
+func CreateScreenshot(userID uint, missionID uint) (*Screenshot, error) {
 	screenshot := Screenshot{
 		UserID:    userID,
 		MissionID: missionID,
-		Picture:   picture,
 		Audit:     false,
 		Approve:   false,
 	}
@@ -58,6 +57,24 @@ func CreateScreenshot(userID uint, missionID uint, picture string) (*Screenshot,
 	}
 	if err := tx.Model(&screenshot).Update("uid", uid).Error; err != nil {
 		return nil, fmt.Errorf("mission uid update failed: %w", err)
+	}
+	tx.Commit()
+	return &screenshot, nil
+}
+
+func AddScreenshotPath(id uint, picture string) (*Screenshot, error) {
+	screenshot := Screenshot{}
+	updateScreenshot := map[string]interface{}{
+		"picture": picture,
+	}
+
+	tx := db.LilHelperDB.Begin()
+	defer tx.RollbackUnlessCommitted()
+	if err := tx.First(&screenshot, id).Error; err != nil {
+		return nil, fmt.Errorf("mission query failed: %w", err)
+	}
+	if err := tx.Model(&screenshot).Updates(updateScreenshot).Error; err != nil {
+		return nil, fmt.Errorf("mission update failed: %w", err)
 	}
 	tx.Commit()
 	return &screenshot, nil

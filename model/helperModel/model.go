@@ -31,6 +31,7 @@ type Mission struct {
 	Active     bool      `gorm:"default:false"`
 	Activeat   time.Time `gorm:""`
 	Inactiveat time.Time `gorm:""`
+	Title      string    `gorm:"default:'__title__'"`
 }
 
 type Screenshot struct {

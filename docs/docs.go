@@ -130,8 +130,11 @@ var doc = `{
         },
         "/admin/mission": {
             "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "produces": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "tags": [
                     "Admin"
@@ -139,13 +142,60 @@ var doc = `{
                 "summary": "create mission",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "title",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "content",
+                        "name": "content",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "weight",
+                        "name": "weight",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "score",
+                        "name": "score",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "active",
+                        "name": "active",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "active_at",
+                        "name": "activeat",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "inactive_at",
+                        "name": "inactiveat",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
                         "description": "set mission params",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/apiModel.SetMissionParams"
-                        }
+                        "name": "picture",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -673,8 +723,11 @@ var doc = `{
         },
         "/helper/screenshot": {
             "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "produces": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "tags": [
                     "Helper"
@@ -682,13 +735,18 @@ var doc = `{
                 "summary": "create screenshot",
                 "parameters": [
                     {
-                        "description": "set screenshot params",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/apiModel.SetScreenshotParams"
-                        }
+                        "type": "string",
+                        "description": "missionuid",
+                        "name": "missionuid",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "picture file",
+                        "name": "picture",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -863,30 +921,20 @@ var doc = `{
                     "example": "2020-02-02"
                 },
                 "picture": {
-                    "type": "string",
-                    "example": "this/is/a/path/of/picture.jpg"
+                    "type": "string"
                 },
                 "score": {
                     "type": "integer"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "this is a title"
                 },
                 "weight": {
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
-                }
-            }
-        },
-        "apiModel.SetScreenshotParams": {
-            "type": "object",
-            "properties": {
-                "missionUID": {
-                    "type": "string",
-                    "example": "screenshot_missionUID"
-                },
-                "picture": {
-                    "type": "string",
-                    "example": "this/is/a/path/of/picture.jpg"
                 }
             }
         },
@@ -1042,6 +1090,9 @@ var doc = `{
                 },
                 "score": {
                     "type": "integer"
+                },
+                "title": {
+                    "type": "string"
                 },
                 "uid": {
                     "type": "string"

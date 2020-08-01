@@ -119,18 +119,16 @@ func GetScreenshots(c *gin.Context) {
 // CreateScreenshot ...
 // @Tags Helper
 // @Summary create screenshot
-// @Produce application/json
-// @Param data body apiModel.SetScreenshotParams true "set screenshot params"
+// @Accept mpfd
+// @Produce mpfd
+// @Param missionuid formData string true "missionuid"
+// @Param picture formData file true "picture file"
 // @Success 200 {object} handler.Response{data=helpermodel.Screenshot}
 // @Router /helper/screenshot [post]
 func CreateScreenshot(c *gin.Context) { // need: userID, with date (today)
 	app := handler.Gin{C: c}
-	var params apimodel.SetScreenshotParams
-
-	if err := c.BindJSON(&params); err != nil {
-		app.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
-		return
-	}
+	missionUID := c.Request.FormValue("missionuid")
+	fmt.Println(missionUID)
 
 	var user *helpermodel.User
 	if user = app.GetUser(); user == nil {
@@ -141,12 +139,14 @@ func CreateScreenshot(c *gin.Context) { // need: userID, with date (today)
 		app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
 		return
 	}
-	missionID, err := hashids.DecodeMissionUID(params.MissionUID)
+	missionID, err := hashids.DecodeMissionUID(missionUID)
 	if err != nil {
 		app.Response(http.StatusBadRequest, e.ERR_NO_SUCH_MISSION, nil)
 		return
 	}
-	screenshot, err := helpermodel.CreateScreenshot(userID, missionID, params.Picture)
+	s, err := helpermodel.CreateScreenshot(userID, missionID)
+	path, err := helpermodel.UploadFile(app.C.Writer, app.C.Request, "screenshot", s.UID)
+	screenshot, err := helpermodel.AddScreenshotPath(s.ID, path)
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else if err != nil {

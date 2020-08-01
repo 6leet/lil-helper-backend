@@ -44,10 +44,10 @@ func (m *Mission) Public() PublicMission {
 	return p
 }
 
-func CreateMission(userID uint, content string, picture string, weightstr string, score int, activeat string, inactiveat string) (*Mission, error) {
+func CreateMission(userID uint, title string, content string, weightstr string, score int, activeat string, inactiveat string) (*Mission, error) {
 	mission := Mission{
+		Title:      title,
 		Content:    content,
-		Picture:    picture,
 		Weight:     weightstr,
 		Score:      score,
 		Active:     false,
@@ -74,6 +74,24 @@ func CreateMission(userID uint, content string, picture string, weightstr string
 		return nil, fmt.Errorf("json unmarshal weight failed: %w", err)
 	}
 	// SetTotalMissionWeight(weight, 1)
+	return &mission, nil
+}
+
+func AddMissionPath(id uint, picture string) (*Mission, error) {
+	mission := Mission{}
+	updateMission := map[string]interface{}{
+		"picture": picture,
+	}
+
+	tx := db.LilHelperDB.Begin()
+	defer tx.RollbackUnlessCommitted()
+	if err := tx.First(&mission, id).Error; err != nil {
+		return nil, fmt.Errorf("mission query failed: %w", err)
+	}
+	if err := tx.Model(&mission).Updates(updateMission).Error; err != nil {
+		return nil, fmt.Errorf("mission update failed: %w", err)
+	}
+	tx.Commit()
 	return &mission, nil
 }
 
