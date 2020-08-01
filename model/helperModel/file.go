@@ -26,3 +26,11 @@ func UploadFile(w http.ResponseWriter, r *http.Request, fieldName string, uid st
 	io.Copy(f, file)
 	return path, nil
 }
+
+func RemoveFile(picture string) error {
+	err := os.Remove(picture)
+	if err != nil {
+		return err
+	}
+	return nil
+}

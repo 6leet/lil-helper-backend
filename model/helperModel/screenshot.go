@@ -138,6 +138,7 @@ func DeleteScreenshot(screenshotID uint) error {
 	if err := tx.First(&screenshot, screenshotID).Error; err != nil {
 		return fmt.Errorf("screenshot query failed: %w", err)
 	}
+	RemoveFile(screenshot.Picture)
 	if err := tx.Delete(&screenshot).Error; err != nil {
 		return fmt.Errorf("screenshot deletion failed: %w", err)
 	}

@@ -318,8 +318,10 @@ paths:
       tags:
       - Admin
     post:
+      consumes:
+      - multipart/form-data
       parameters:
-      - description: mission uid
+      - description: uid
         in: path
         name: uid
         required: true
@@ -360,7 +362,7 @@ paths:
         required: true
         type: file
       produces:
-      - application/json
+      - multipart/form-data
       responses:
         "200":
           description: OK

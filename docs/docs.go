@@ -260,8 +260,11 @@ var doc = `{
         },
         "/admin/missions/{uid}": {
             "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "produces": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "tags": [
                     "Admin"
@@ -270,7 +273,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "mission uid",
+                        "description": "uid",
                         "name": "uid",
                         "in": "path",
                         "required": true

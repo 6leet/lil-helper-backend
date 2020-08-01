@@ -125,6 +125,7 @@ func DeleteMission(id uint) error {
 	if err := tx.First(&mission, id).Error; err != nil {
 		return fmt.Errorf("mission query failed: %w", err)
 	}
+	RemoveFile(mission.Picture)
 	if err := tx.Delete(&mission).Error; err != nil {
 		return fmt.Errorf("mission deletion failed: %w", err)
 	}

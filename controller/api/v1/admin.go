@@ -130,8 +130,9 @@ func GetMissions(c *gin.Context) {
 // UpdateMission ...
 // @Tags Admin
 // @Summary update mission
-// @Produce application/json
-// @Param uid path string true "mission uid"
+// @Accept mpfd
+// @Produce mpfd
+// @Param uid path string true "uid"
 // @Param title formData string true "title"
 // @Param content formData string true "content"
 // @Param weight formData string true "weight"
@@ -150,7 +151,12 @@ func UpdateMission(c *gin.Context) {
 	activeat := c.Request.FormValue("activeat")
 	inactiveat := c.Request.FormValue("inactiveat")
 
-	missionUID := c.Param("uid")
+	fmt.Println("title", title)
+	fmt.Println("activeat", activeat)
+	fmt.Println("inactiveat", inactiveat)
+
+	missionUID := "3A5D7B59B492"
+	// missionUID := c.Param("uid")
 	missionID, err := hashids.DecodeMissionUID(missionUID)
 	if err != nil {
 		app.Response(http.StatusBadRequest, e.ERR_NO_SUCH_MISSION, nil)
