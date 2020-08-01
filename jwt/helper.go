@@ -65,6 +65,7 @@ func init() {
 
 		// done
 		Authenticator: func(c *gin.Context) (interface{}, error) {
+			app := handler.Gin{C: c}
 			var loginVals apimodel.LoginParam
 			if err := c.ShouldBind(&loginVals); err != nil {
 				return nil, jwt.ErrMissingLoginValues
@@ -74,8 +75,11 @@ func init() {
 
 			// to-do: login function (database)
 			if user, err := helpermodel.Login(username, password); err == nil {
-				// app.SetCookie("userUID", user.UID, time.Now().Add(config.Timeout), config)
-				// app.SetCookie("nickname", user.Nickname, time.Now().Add(config.Timeout), config)
+				role := "helper"
+				expire := time.Now().Add(config.Timeout)
+				app.SetCookie("userUID", user.UID, expire, config)
+				app.SetCookie("nickname", user.Nickname, expire, config)
+				app.SetCookie("role", role, expire, config)
 				return user, nil
 			} else if errors.Unwrap(err) != nil {
 				return nil, jwt.ErrFailedTokenCreation
@@ -88,25 +92,21 @@ func init() {
 			app := handler.Gin{C: c}
 			data := apimodel.LoginResData{Token: token, Expire: expire.Format(time.RFC3339)}
 			app.SetJwtCookie(token, expire, config)
-
-			claims := jwt.ExtractClaims(c)
-			uid, _ := claims[identityKey].(string)
-			nickname, _ := claims["nickname"].(string)
-			app.SetCookie("userUID", uid, expire, config)
-			app.SetCookie("nickname", nickname, expire, config)
 			app.Response(http.StatusOK, e.SUCCESS, data)
 		},
 		RefreshResponse: func(c *gin.Context, code int, token string, expire time.Time) {
 			app := handler.Gin{C: c}
 			data := apimodel.LoginResData{Token: token, Expire: expire.Format(time.RFC3339)}
 			app.SetJwtCookie(token, expire, config)
-
-			claims := jwt.ExtractClaims(c)
-			uid, _ := claims[identityKey].(string)
-			nickname, _ := claims["nickname"].(string)
-			app.SetCookie("userUID", uid, expire, config)
-			app.SetCookie("nickname", nickname, expire, config)
 			app.Response(http.StatusOK, e.SUCCESS, data)
+		},
+		LogoutResponse: func(c *gin.Context, code int) {
+			app := handler.Gin{C: c}
+			app.ClearCookie("x-token", config)
+			app.ClearCookie("userUID", config)
+			app.ClearCookie("nickname", config)
+			app.ClearCookie("role", config)
+			app.Response(http.StatusOK, e.SUCCESS, nil)
 		},
 
 		// done

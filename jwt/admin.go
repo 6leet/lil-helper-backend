@@ -66,6 +66,7 @@ func init() {
 
 		// done
 		Authenticator: func(c *gin.Context) (interface{}, error) {
+			app := handler.Gin{C: c}
 			var loginVals apimodel.LoginParam
 			if err := c.ShouldBind(&loginVals); err != nil {
 				return nil, jwt.ErrMissingLoginValues
@@ -75,8 +76,14 @@ func init() {
 
 			// to-do: login function (database)
 			if user, err := helpermodel.Login(username, password); err == nil {
-				// app.SetCookie("userUID", user.UID, time.Now().Add(config.Timeout), config)
-				// app.SetCookie("nickname", "__admin__", time.Now().Add(config.Timeout), config)
+				if !user.Admin {
+					return nil, jwt.ErrFailedAuthentication
+				}
+				role := "admin"
+				expire := time.Now().Add(config.Timeout)
+				app.SetCookie("userUID", user.UID, expire, config)
+				app.SetCookie("nickname", user.Nickname, expire, config)
+				app.SetCookie("role", role, expire, config)
 				return user, nil
 			} else if errors.Unwrap(err) != nil {
 				return nil, jwt.ErrFailedTokenCreation
@@ -89,10 +96,6 @@ func init() {
 			app := handler.Gin{C: c}
 			data := apimodel.LoginResData{Token: token, Expire: expire.Format(time.RFC3339)}
 			app.SetJwtCookie(token, expire, config)
-
-			claims := jwt.ExtractClaims(c)
-			app.SetCookie("userUID", claims[identityKey].(string), expire, config)
-			app.SetCookie("nickname", "__admin__", expire, config)
 			app.Response(http.StatusOK, e.SUCCESS, data)
 		},
 		RefreshResponse: func(c *gin.Context, code int, token string, expire time.Time) {

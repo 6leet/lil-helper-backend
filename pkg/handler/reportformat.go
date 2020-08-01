@@ -84,6 +84,18 @@ func (g *Gin) SetCookie(cookieName string, cookie string, expire time.Time, conf
 	)
 }
 
+func (g *Gin) ClearCookie(cookieName string, config config.JwtConfig) {
+	g.C.SetCookie(
+		cookieName,
+		"",
+		-1,
+		config.CookiePath,
+		config.CookieDomain,
+		config.SecureCookie,
+		config.CookieHTTPOnly,
+	)
+}
+
 func (g *Gin) Redirect(path string) {
 	g.C.Redirect(http.StatusMovedPermanently, path)
 	return

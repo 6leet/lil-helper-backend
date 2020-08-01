@@ -40,13 +40,24 @@ func Regist(c *gin.Context) {
 
 // Login ...
 // @Tags Base
-// @Summary User login
+// @Summary Admin/Helper login
 // @Produce application/json
 // @Param data body apimodel.LoginParam true "user login parameters"
 // @Success 200 {object} handler.Response{data=apimodel.LoginResData}
 // @Router /base/login [post]
 func Login(c *gin.Context) {
 	jwt.HelperJwt.LoginHandler(c)
+}
+
+// AdminLogin ...
+// @Tags Base
+// @Summary Admin login
+// @Produce application/json
+// @Param data body apimodel.LoginParam true "user login parameters"
+// @Success 200 {object} handler.Response{data=apimodel.LoginResData}
+// @Router /base/adminlogin [post]
+func AdminLogin(c *gin.Context) {
+	jwt.AdminJwt.LoginHandler(c)
 }
 
 // RefreshToken ...
@@ -57,4 +68,14 @@ func Login(c *gin.Context) {
 // @Router /base/refresh-token [get]
 func RefreshToken(c *gin.Context) {
 	jwt.HelperJwt.RefreshHandler(c)
+}
+
+// Logout ...
+// @Tags Base
+// @Summary Admin/Helper logout
+// @Produce application/json
+// @Success 200 string string
+// @Router /base/logout [post]
+func Logout(c *gin.Context) {
+	jwt.HelperJwt.LogoutHandler(c)
 }

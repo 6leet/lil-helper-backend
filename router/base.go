@@ -14,6 +14,8 @@ func InitBaseRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 
 		BaseRouter.POST("regist", v1.Regist)
 		BaseRouter.POST("login", v1.Login)
+		BaseRouter.POST("adminlogin", v1.AdminLogin)
+		BaseRouter.POST("logout", v1.Logout)
 	}
 	return BaseRouter
 }

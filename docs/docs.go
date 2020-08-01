@@ -464,7 +464,7 @@ var doc = `{
                 }
             }
         },
-        "/base/login": {
+        "/base/adminlogin": {
             "post": {
                 "produces": [
                     "application/json"
@@ -472,7 +472,7 @@ var doc = `{
                 "tags": [
                     "Base"
                 ],
-                "summary": "User login",
+                "summary": "Admin login",
                 "parameters": [
                     {
                         "description": "user login parameters",
@@ -501,6 +501,67 @@ var doc = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/base/login": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Base"
+                ],
+                "summary": "Admin/Helper login",
+                "parameters": [
+                    {
+                        "description": "user login parameters",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.LoginParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/apimodel.LoginResData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/base/logout": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Base"
+                ],
+                "summary": "Admin/Helper logout",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }

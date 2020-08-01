@@ -445,6 +445,30 @@ paths:
       summary: audit screenshot
       tags:
       - Admin
+  /base/adminlogin:
+    post:
+      parameters:
+      - description: user login parameters
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.LoginParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/apimodel.LoginResData'
+              type: object
+      summary: Admin login
+      tags:
+      - Base
   /base/login:
     post:
       parameters:
@@ -466,7 +490,19 @@ paths:
                 data:
                   $ref: '#/definitions/apimodel.LoginResData'
               type: object
-      summary: User login
+      summary: Admin/Helper login
+      tags:
+      - Base
+  /base/logout:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Admin/Helper logout
       tags:
       - Base
   /base/refresh-token:
