@@ -17,13 +17,14 @@ import (
 )
 
 type PublicMission struct {
-	UID     string `json:"missionUID"`
-	Content string `json:"content"`
-	Picture string `json:"picturePath"`
-	Weight  string `json:"weight"`
-	Score   int    `json:"score"`
-	Date    string `json:"date"`
-	Active  bool   `json:"active"`
+	UID        string `json:"missionUID"`
+	Content    string `json:"content"`
+	Picture    string `json:"picturePath"`
+	Weight     string `json:"weight"`
+	Score      int    `json:"score"`
+	Activeat   string `json:"activeat"`
+	Inactiveat string `json:"inactiveat"`
+	Active     bool   `json:"active"`
 }
 
 type MissionsStat struct {
@@ -33,13 +34,14 @@ type MissionsStat struct {
 
 func (m *Mission) Public() PublicMission {
 	p := PublicMission{
-		UID:     m.UID,
-		Content: m.Content,
-		Picture: m.Picture,
-		Weight:  m.Weight,
-		Score:   m.Score,
-		Date:    m.CreatedAt.String()[0:10],
-		Active:  m.Active,
+		UID:        m.UID,
+		Content:    m.Content,
+		Picture:    m.Picture,
+		Weight:     m.Weight,
+		Score:      m.Score,
+		Activeat:   m.Activeat.String()[0:10],
+		Inactiveat: m.Inactiveat.String()[0:10],
+		Active:     m.Active,
 	}
 	return p
 }
@@ -137,7 +139,7 @@ func GetMissionsByDate(dateFrom string, dateTo string) ([]Mission, error) {
 	missions := []Mission{}
 
 	query := db.LilHelperDB
-	if err := query.Where("created_at BETWEEN ? and ?", dateFrom, dateTo).Find(&missions).Error; err != nil {
+	if err := query.Where("activeat BETWEEN ? and ?", dateFrom, dateTo).Find(&missions).Error; err != nil {
 		return nil, fmt.Errorf("query missions failed: %w", err)
 	}
 	return missions, nil
@@ -229,6 +231,7 @@ func ReorganizeMission() (*MissionsStat, error) {
 
 	tx := db.LilHelperDB.Begin()
 	defer tx.RollbackUnlessCommitted()
+
 	activeQuery := tx.Where("activeat = ?", currentDate)
 	if err := activeQuery.Error; err != nil {
 		return nil, fmt.Errorf("Missions query failed: %w", err)
@@ -237,13 +240,6 @@ func ReorganizeMission() (*MissionsStat, error) {
 		return nil, fmt.Errorf("Missions activation failed: %w", err)
 	}
 	activeQuery.Find(&activeMissions)
-	// if err := tx.Where("activeat = ?", currentDate).Find(&activeMissions).Error; err != nil {
-	// 	return nil, fmt.Errorf("Missions query failed: %w", err)
-	// }
-	// fmt.Println("activate", activeMissions)
-	// if err := tx.Model(&activeMissions).Update("active", true).Error; err != nil {
-	// 	return nil, fmt.Errorf("Missions activation failed: %w", err)
-	// }
 	for _, m := range activeMissions {
 		var weight []int
 		if err := json.Unmarshal([]byte(m.Weight), &weight); err != nil {
@@ -261,20 +257,13 @@ func ReorganizeMission() (*MissionsStat, error) {
 		return nil, fmt.Errorf("Missions inactivation failed: %w", err)
 	}
 	inactiveQuery.Find(&inactiveMissions)
-
-	// if err := tx.Where("inactiveat = ?", currentDate).Find(&inactiveMissions).Error; err != nil {
-	// 	return nil, fmt.Errorf("Missions query failed: %w", err)
-	// }
-	// fmt.Println("inactivate", inactiveMissions)
-	// if err := tx.Model(&inactiveMissions).Update("active", false).Error; err != nil {
-	// 	return nil, fmt.Errorf("Missions inactivation failed: %w", err)
-	// }
 	for _, m := range inactiveMissions {
 		_, ok := config.Weight[m.UID]
 		if ok {
 			delete(config.Weight, m.UID)
 		}
 		inactive = append(inactive, m.UID)
+		DeleteAssignmentByMission(m.ID)
 	}
 
 	VTool.Set("mission.totalweight", config.Weight)

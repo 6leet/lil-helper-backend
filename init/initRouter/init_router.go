@@ -21,6 +21,7 @@ func InitRouter() *gin.Engine {
 	router.InitHelperRouter(ApiGroup)
 	router.InitCommonRouter(ApiGroup)
 	router.InitBaseRouter(ApiGroup)
+	router.InitFileRouter(ApiGroup)
 
 	return Router
 }

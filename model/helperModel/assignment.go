@@ -33,3 +33,17 @@ func GetAssignment(userID uint) (*Assignment, error) {
 	}
 	return &assignment, nil
 }
+
+func DeleteAssignmentByMission(missionID uint) error {
+	assignments := Assignment{}
+	tx := db.LilHelperDB.Begin()
+	defer tx.RollbackUnlessCommitted()
+	if err := tx.Where("mission_id = ?", missionID).Find(&assignments).Error; err != nil {
+		return fmt.Errorf("query assignment failed: %w", err)
+	}
+	if err := tx.Delete(&assignments).Error; err != nil {
+		return fmt.Errorf("assignment deletion failed: %w", err)
+	}
+	tx.Commit()
+	return nil
+}

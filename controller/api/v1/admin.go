@@ -33,7 +33,7 @@ func RegistAdmin(c *gin.Context) { // done
 	}
 
 	var admin bool = true
-	user, err := helpermodel.RegistUser(params.Username, params.Password, params.Email, admin)
+	user, err := helpermodel.RegistUser(params.Username, params.Password, params.Email, params.Nickname, admin)
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else if err != nil {
@@ -109,7 +109,7 @@ func GetMissions(c *gin.Context) {
 	}
 	if dateFrom == "" || dateTo == "" {
 		dateFrom = time.Now().String()[0:10]
-		dateTo = time.Now().AddDate(0, 0, 1).String()[0:10]
+		dateTo = dateFrom
 	}
 
 	missions, err := helpermodel.GetMissionsByDate(dateFrom, dateTo)
@@ -155,8 +155,7 @@ func UpdateMission(c *gin.Context) {
 	fmt.Println("activeat", activeat)
 	fmt.Println("inactiveat", inactiveat)
 
-	missionUID := "3A5D7B59B492"
-	// missionUID := c.Param("uid")
+	missionUID := c.Param("uid")
 	missionID, err := hashids.DecodeMissionUID(missionUID)
 	if err != nil {
 		app.Response(http.StatusBadRequest, e.ERR_NO_SUCH_MISSION, nil)
@@ -192,6 +191,7 @@ func DeleteMission(c *gin.Context) {
 		return
 	}
 	err = helpermodel.DeleteMission(missionID)
+	err = helpermodel.DeleteAssignmentByMission(missionID)
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else if err != nil {

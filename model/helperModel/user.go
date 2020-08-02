@@ -28,7 +28,7 @@ func (u *User) Public() (pu PublicUser) {
 	return pu
 }
 
-func RegistUser(username string, password string, email string, admin bool) (*User, error) {
+func RegistUser(username string, password string, email string, nickname string, admin bool) (*User, error) {
 	tx := db.LilHelperDB.Begin()
 	defer tx.RollbackUnlessCommitted()
 
@@ -41,6 +41,7 @@ func RegistUser(username string, password string, email string, admin bool) (*Us
 		Score:       0,
 		Email:       email,
 		Certificate: false,
+		Nickname:    nickname,
 	}
 	if notExist := tx.Where("username = ?", username).First(&user).RecordNotFound(); !notExist {
 		return nil, e.ErrUserExist

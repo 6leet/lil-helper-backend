@@ -945,6 +945,10 @@ var doc = `{
                     "type": "string",
                     "example": "my_email@example.com"
                 },
+                "nickname": {
+                    "type": "string",
+                    "example": "my_nickname"
+                },
                 "password": {
                     "type": "string",
                     "example": "my_password"
@@ -1023,6 +1027,10 @@ var doc = `{
                 "email": {
                     "type": "string",
                     "example": "my_email@example.com"
+                },
+                "nickname": {
+                    "type": "string",
+                    "example": "my_nickname"
                 },
                 "password": {
                     "type": "string",

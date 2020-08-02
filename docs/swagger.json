@@ -928,6 +928,10 @@
                     "type": "string",
                     "example": "my_email@example.com"
                 },
+                "nickname": {
+                    "type": "string",
+                    "example": "my_nickname"
+                },
                 "password": {
                     "type": "string",
                     "example": "my_password"
@@ -1006,6 +1010,10 @@
                 "email": {
                     "type": "string",
                     "example": "my_email@example.com"
+                },
+                "nickname": {
+                    "type": "string",
+                    "example": "my_nickname"
                 },
                 "password": {
                     "type": "string",

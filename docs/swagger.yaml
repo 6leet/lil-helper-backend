@@ -16,6 +16,9 @@ definitions:
       email:
         example: my_email@example.com
         type: string
+      nickname:
+        example: my_nickname
+        type: string
       password:
         example: my_password
         type: string
@@ -68,6 +71,9 @@ definitions:
     properties:
       email:
         example: my_email@example.com
+        type: string
+      nickname:
+        example: my_nickname
         type: string
       password:
         example: my_password
