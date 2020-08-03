@@ -82,6 +82,18 @@ definitions:
         example: my_username
         type: string
     type: object
+  apimodel.UserUpdateParam:
+    properties:
+      email:
+        example: my_new_email
+        type: string
+      nickname:
+        example: my_new_nickname
+        type: string
+      password:
+        example: my_new_password
+        type: string
+    type: object
   handler.Response:
     properties:
       code:
@@ -99,6 +111,8 @@ definitions:
         type: boolean
       admin:
         type: boolean
+      nickname:
+        type: string
       score:
         type: integer
       userUID:
@@ -133,6 +147,8 @@ definitions:
         type: boolean
       admin:
         type: boolean
+      nickname:
+        type: string
       score:
         type: integer
       userUID:
@@ -154,6 +170,31 @@ definitions:
         type: string
       userID:
         type: integer
+    type: object
+  helpermodel.User:
+    properties:
+      active:
+        type: boolean
+      admin:
+        type: boolean
+      certificate:
+        type: boolean
+      email:
+        type: string
+      exp:
+        type: integer
+      level:
+        type: integer
+      nickname:
+        type: string
+      password:
+        type: string
+      score:
+        type: integer
+      uid:
+        type: string
+      username:
+        type: string
     type: object
 info:
   contact: {}
@@ -523,7 +564,7 @@ paths:
                 data:
                   $ref: '#/definitions/apimodel.LoginResData'
               type: object
-      summary: Admin/Helper login
+      summary: Helper login
       tags:
       - Base
   /base/logout:
@@ -594,6 +635,30 @@ paths:
                   $ref: '#/definitions/helpermodel.Mission'
               type: object
       summary: get mission
+      tags:
+      - Helper
+  /helper/profile:
+    post:
+      parameters:
+      - description: user update params
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apimodel.UserUpdateParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpermodel.User'
+              type: object
+      summary: update helper profile
       tags:
       - Helper
   /helper/screenshot:

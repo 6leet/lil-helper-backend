@@ -38,14 +38,14 @@ func Regist(c *gin.Context) {
 	}
 }
 
-// Login ...
+// HelperLogin ...
 // @Tags Base
-// @Summary Admin/Helper login
+// @Summary Helper login
 // @Produce application/json
 // @Param data body apimodel.LoginParam true "user login parameters"
 // @Success 200 {object} handler.Response{data=apimodel.LoginResData}
 // @Router /base/login [post]
-func Login(c *gin.Context) {
+func HelperLogin(c *gin.Context) {
 	jwt.HelperJwt.LoginHandler(c)
 }
 

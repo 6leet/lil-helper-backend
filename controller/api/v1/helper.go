@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"fmt"
+	"lil-helper-backend/config"
 	"lil-helper-backend/hashids"
 	apimodel "lil-helper-backend/model/apiModel"
 	helpermodel "lil-helper-backend/model/helperModel"
@@ -179,6 +180,42 @@ func DeleteScreenshot(c *gin.Context) {
 	} else {
 		app.Response(http.StatusOK, e.SUCCESS, nil)
 	}
+}
+
+// UpdateProfile ...
+// @Tags Helper
+// @Summary update helper profile
+// @Produce application/json
+// @Param data body apimodel.UserUpdateParam true "user update params"
+// @Success 200 {object} handler.Response{data=helpermodel.User}
+// @Router /helper/profile [post]
+func UpdateProfile(c *gin.Context) {
+	app := handler.Gin{C: c}
+
+	var params apimodel.UserUpdateParam
+	if err := c.BindJSON(&params); err != nil {
+		app.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
+	}
+
+	var user *helpermodel.User
+	if user = app.GetUser(); user == nil {
+		return
+	}
+	userID, err := hashids.DecodeUserUID(user.UID)
+	if err != nil {
+		app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
+		return
+	}
+	user, err = helpermodel.UpdateUser(userID, params.Password, params.Email, params.Nickname)
+	if err != nil {
+		app.Response(http.StatusBadRequest, e.ERROR, nil)
+		return
+	}
+	config := config.UserJwt
+	expire := time.Now().Add(config.Timeout)
+	app.SetCookie("nickname", user.Nickname, expire, config)
+	app.Response(http.StatusOK, e.SUCCESS, user.Public())
 }
 
 // not used

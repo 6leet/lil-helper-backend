@@ -75,6 +75,9 @@ func init() {
 
 			// to-do: login function (database)
 			if user, err := helpermodel.Login(username, password); err == nil {
+				if user.Admin {
+					return nil, jwt.ErrFailedAuthentication
+				}
 				role := "helper"
 				expire := time.Now().Add(config.Timeout)
 				app.SetCookie("userUID", user.UID, expire, config)

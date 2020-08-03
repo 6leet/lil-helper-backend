@@ -15,6 +15,7 @@ func InitHelperRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 		HelperRouter.GET("screenshots", v1.GetScreenshots)
 
 		HelperRouter.POST("screenshot", v1.CreateScreenshot)
+		HelperRouter.POST("profile", v1.UpdateProfile)
 
 		HelperRouter.DELETE("screenshots/:uid", v1.DeleteScreenshot)
 	}

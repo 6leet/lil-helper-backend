@@ -16,3 +16,9 @@ type UserRegistParam struct {
 	Email    string `json:"email" example:"my_email@example.com"`
 	Nickname string `json:"nickname" example:"my_nickname"`
 }
+
+type UserUpdateParam struct {
+	Password string `json:"password" example:"my_new_password"`
+	Email    string `json:"email" example:"my_new_email"`
+	Nickname string `json:"nickname" example:"my_new_nickname"`
+}

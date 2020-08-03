@@ -17,6 +17,7 @@ type PublicUser struct {
 	Admin    bool   `json:"admin"`
 	Active   bool   `json:"active"`
 	Score    int    `json:"score"`
+	Nickname string `json:"nickname"`
 }
 
 func (u *User) Public() (pu PublicUser) {
@@ -25,6 +26,7 @@ func (u *User) Public() (pu PublicUser) {
 	pu.Admin = u.Admin
 	pu.Active = u.Active
 	pu.Score = u.Score
+	pu.Nickname = u.Nickname
 	return pu
 }
 
@@ -126,6 +128,25 @@ func SetUserScore(id uint, missionID uint, addvar int) (*User, error) {
 	if err := tx.Find(&user, id).Update("score", gorm.Expr("score + ?", scorevar)).Error; err != nil {
 		return nil, fmt.Errorf("user update failed: %w", err)
 	}
+	tx.Commit()
+	return &user, nil
+}
+
+func UpdateUser(id uint, password string, email string, nickname string) (*User, error) {
+	user := User{}
+	passwordMD5 := utils.MD5V([]byte(password))
+	updateUser := User{
+		Password: passwordMD5,
+		Nickname: nickname,
+	}
+
+	tx := db.LilHelperDB.Begin()
+	defer tx.RollbackUnlessCommitted()
+
+	if err := tx.Find(&user, id).Updates(updateUser).Error; err != nil {
+		return nil, fmt.Errorf("user update failed: %w", err)
+	}
+
 	tx.Commit()
 	return &user, nil
 }

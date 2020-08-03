@@ -592,7 +592,7 @@ var doc = `{
                 "tags": [
                     "Base"
                 ],
-                "summary": "Admin/Helper login",
+                "summary": "Helper login",
                 "parameters": [
                     {
                         "description": "user login parameters",
@@ -740,6 +740,48 @@ var doc = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/helpermodel.Mission"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/helper/profile": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Helper"
+                ],
+                "summary": "update helper profile",
+                "parameters": [
+                    {
+                        "description": "user update params",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/apimodel.UserUpdateParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/helpermodel.User"
                                         }
                                     }
                                 }
@@ -1034,6 +1076,23 @@ var doc = `{
                 }
             }
         },
+        "apimodel.UserUpdateParam": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "my_new_email"
+                },
+                "nickname": {
+                    "type": "string",
+                    "example": "my_new_nickname"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "my_new_password"
+                }
+            }
+        },
         "handler.Response": {
             "type": "object",
             "properties": {
@@ -1058,6 +1117,9 @@ var doc = `{
                 },
                 "admin": {
                     "type": "boolean"
+                },
+                "nickname": {
+                    "type": "string"
                 },
                 "score": {
                     "type": "integer"
@@ -1111,6 +1173,9 @@ var doc = `{
                 "admin": {
                     "type": "boolean"
                 },
+                "nickname": {
+                    "type": "string"
+                },
                 "score": {
                     "type": "integer"
                 },
@@ -1142,6 +1207,44 @@ var doc = `{
                 },
                 "userID": {
                     "type": "integer"
+                }
+            }
+        },
+        "helpermodel.User": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "admin": {
+                    "type": "boolean"
+                },
+                "certificate": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "exp": {
+                    "type": "integer"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "uid": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         }
