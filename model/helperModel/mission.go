@@ -18,6 +18,7 @@ import (
 
 type PublicMission struct {
 	UID        string `json:"missionUID"`
+	Title      string `json:"title"`
 	Content    string `json:"content"`
 	Picture    string `json:"picturePath"`
 	Weight     string `json:"weight"`
@@ -35,6 +36,7 @@ type MissionsStat struct {
 func (m *Mission) Public() PublicMission {
 	p := PublicMission{
 		UID:        m.UID,
+		Title:      m.Title,
 		Content:    m.Content,
 		Picture:    m.Picture,
 		Weight:     m.Weight,
@@ -147,10 +149,16 @@ func DeleteMission(id uint) error {
 	return nil
 }
 
-func GetMissionsByDate(dateFrom string, dateTo string) ([]Mission, error) {
+func GetMissionsByDate(dateFrom string, dateTo string, titleKeyword string, contentKeyword string) ([]Mission, error) {
 	missions := []Mission{}
 
 	query := db.LilHelperDB
+	if titleKeyword != "" {
+		query = query.Where("title LIKE ?", titleKeyword)
+	}
+	if contentKeyword != "" {
+		query = query.Where("content LIKE ?", contentKeyword)
+	}
 	if err := query.Where("(? BETWEEN activeat and inactiveat) or (? BETWEEN activeat and inactiveat) or (activeat BETWEEN ? and ?)", dateFrom, dateTo, dateFrom, dateTo).Find(&missions).Error; err != nil {
 		return nil, fmt.Errorf("query missions failed: %w", err)
 	}

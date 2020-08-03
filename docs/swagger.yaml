@@ -294,6 +294,14 @@ paths:
         in: query
         name: dateto
         type: string
+      - description: title keyword
+        in: query
+        name: titlekeyword
+        type: string
+      - description: content keyword
+        in: query
+        name: contentkeyword
+        type: string
       produces:
       - application/json
       responses:

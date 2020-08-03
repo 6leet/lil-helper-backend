@@ -94,12 +94,15 @@ func CreateMission(c *gin.Context) {
 // @Produce application/json
 // @Param datefrom query string false "mission date from"
 // @Param dateto query string false "mission date to"
+// @Param titlekeyword query string false "title keyword"
+// @Param contentkeyword query string false "content keyword"
 // @Success 200 {object} handler.Response{data=apiModel.JsonObjectArray}
 // @Router /admin/missions [get]
 func GetMissions(c *gin.Context) {
 	app := handler.Gin{C: c}
 
 	var dateFrom, dateTo string
+	var titleKeyword, contentKeyword string
 
 	if dateFromq, ok := c.GetQuery("datefrom"); ok {
 		dateFrom = dateFromq
@@ -112,7 +115,14 @@ func GetMissions(c *gin.Context) {
 		dateTo = dateFrom
 	}
 
-	missions, err := helpermodel.GetMissionsByDate(dateFrom, dateTo)
+	if tkstr, ok := c.GetQuery("titlekeyword"); ok {
+		titleKeyword = "%" + tkstr + "%"
+	}
+	if ckstr, ok := c.GetQuery("contentkeyword"); ok {
+		contentKeyword = "%" + ckstr + "%"
+	}
+
+	missions, err := helpermodel.GetMissionsByDate(dateFrom, dateTo, titleKeyword, contentKeyword)
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else if err != nil {

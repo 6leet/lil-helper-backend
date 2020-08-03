@@ -240,6 +240,18 @@ var doc = `{
                         "description": "mission date to",
                         "name": "dateto",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "title keyword",
+                        "name": "titlekeyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "content keyword",
+                        "name": "contentkeyword",
+                        "in": "query"
                     }
                 ],
                 "responses": {
