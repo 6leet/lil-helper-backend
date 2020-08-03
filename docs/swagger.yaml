@@ -191,6 +191,10 @@ paths:
         in: query
         name: all
         type: boolean
+      - description: username keyword
+        in: query
+        name: keyword
+        type: string
       produces:
       - application/json
       responses:

@@ -76,6 +76,12 @@ var doc = `{
                         "description": "flag to query all users (default: false)",
                         "name": "all",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "username keyword",
+                        "name": "keyword",
+                        "in": "query"
                     }
                 ],
                 "responses": {

@@ -85,14 +85,14 @@ func GetUser(id uint) (*User, error) {
 	}
 }
 
-func GetUsers(active bool, admin bool, all bool, ifsort bool) ([]User, error) {
+func GetUsers(active bool, admin bool, all bool, ifsort bool, keyword string) ([]User, error) {
 	users := []User{}
 
 	query := db.LilHelperDB
 	if !all {
 		query = query.Where("active = ? AND admin = ?", active, admin)
 	}
-	if err := query.Find(&users).Error; err != nil {
+	if err := query.Where("username LIKE ?", keyword).Find(&users).Error; err != nil {
 		return nil, fmt.Errorf("query users failed: %w", err)
 	}
 	if ifsort {

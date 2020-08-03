@@ -287,19 +287,24 @@ func SetScreenshotApprove(c *gin.Context) {
 // @Produce application/json
 // @Param active query bool false "flag to query active user only (default: true)"
 // @Param all query bool false "flag to query all users (default: false)"
+// @Param keyword query string false "username keyword"
 // @Success 200 {object} handler.Response{data=apiModel.JsonObjectArray}
 // @Router /admin/helpers [get]
 func GetHelpers(c *gin.Context) {
 	app := handler.Gin{C: c}
 
 	var active, all = true, false
+	var keyword string
 	if activestr, ok := c.GetQuery("active"); ok && activestr == "false" {
 		active = false
 	}
 	if allstr, ok := c.GetQuery("all"); ok && allstr == "true" {
 		all = true
 	}
-	if helpers, err := helpermodel.GetUsers(active, false, all, false); err != nil {
+	if keywordstr, ok := c.GetQuery("keyword"); ok {
+		keyword = "%" + keywordstr + "%"
+	}
+	if helpers, err := helpermodel.GetUsers(active, false, all, false, keyword); err != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else {
 		var publicHelpers []helpermodel.PublicUser

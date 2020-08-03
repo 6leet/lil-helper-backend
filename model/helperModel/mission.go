@@ -151,7 +151,7 @@ func GetMissionsByDate(dateFrom string, dateTo string) ([]Mission, error) {
 	missions := []Mission{}
 
 	query := db.LilHelperDB
-	if err := query.Where("activeat BETWEEN ? and ?", dateFrom, dateTo).Find(&missions).Error; err != nil {
+	if err := query.Where("(? BETWEEN activeat and inactiveat) or (? BETWEEN activeat and inactiveat) or (activeat BETWEEN ? and ?)", dateFrom, dateTo, dateFrom, dateTo).Find(&missions).Error; err != nil {
 		return nil, fmt.Errorf("query missions failed: %w", err)
 	}
 	return missions, nil
