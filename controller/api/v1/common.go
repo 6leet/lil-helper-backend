@@ -21,7 +21,7 @@ import (
 func GetTopScoreHelpers(c *gin.Context) {
 	app := handler.Gin{C: c}
 
-	if helpers, err := helpermodel.GetUsers(true, false, false, true, ""); err != nil {
+	if helpers, err := helpermodel.GetUsers(true, false, false, true, "%%"); err != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else {
 		var publicHelpers []helpermodel.PublicUser
