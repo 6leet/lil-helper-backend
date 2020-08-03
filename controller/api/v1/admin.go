@@ -116,11 +116,13 @@ func GetMissions(c *gin.Context) {
 	}
 
 	if tkstr, ok := c.GetQuery("titlekeyword"); ok {
-		titleKeyword = "%" + tkstr + "%"
+		titleKeyword = tkstr
 	}
 	if ckstr, ok := c.GetQuery("contentkeyword"); ok {
-		contentKeyword = "%" + ckstr + "%"
+		contentKeyword = ckstr
 	}
+	titleKeyword = "%" + titleKeyword + "%"
+	contentKeyword = "%" + contentKeyword + "%"
 
 	missions, err := helpermodel.GetMissionsByDate(dateFrom, dateTo, titleKeyword, contentKeyword)
 	if errors.Unwrap(err) != nil {
@@ -312,8 +314,9 @@ func GetHelpers(c *gin.Context) {
 		all = true
 	}
 	if keywordstr, ok := c.GetQuery("keyword"); ok {
-		keyword = "%" + keywordstr + "%"
+		keyword = keywordstr
 	}
+	keyword = "%" + keyword + "%"
 	if helpers, err := helpermodel.GetUsers(active, false, all, false, keyword); err != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
 	} else {

@@ -153,12 +153,7 @@ func GetMissionsByDate(dateFrom string, dateTo string, titleKeyword string, cont
 	missions := []Mission{}
 
 	query := db.LilHelperDB
-	if titleKeyword != "" {
-		query = query.Where("title LIKE ?", titleKeyword)
-	}
-	if contentKeyword != "" {
-		query = query.Where("content LIKE ?", contentKeyword)
-	}
+	query = query.Where("title LIKE ? AND content LIKE ?", titleKeyword, contentKeyword)
 	if err := query.Where("(? BETWEEN activeat and inactiveat) or (? BETWEEN activeat and inactiveat) or (activeat BETWEEN ? and ?)", dateFrom, dateTo, dateFrom, dateTo).Find(&missions).Error; err != nil {
 		return nil, fmt.Errorf("query missions failed: %w", err)
 	}

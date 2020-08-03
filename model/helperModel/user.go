@@ -92,9 +92,7 @@ func GetUsers(active bool, admin bool, all bool, ifsort bool, keyword string) ([
 	if !all {
 		query = query.Where("active = ? AND admin = ?", active, admin)
 	}
-	if keyword != "" {
-		query = query.Where("username LIKE ?", keyword)
-	}
+	query = query.Where("username LIKE ?", keyword)
 	if err := query.Find(&users).Error; err != nil {
 		return nil, fmt.Errorf("query users failed: %w", err)
 	}
