@@ -348,32 +348,6 @@ var doc = `{
                         }
                     }
                 }
-            },
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "delete mission",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "mission uid",
-                        "name": "uid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handler.Response"
-                        }
-                    }
-                }
             }
         },
         "/admin/regist": {
@@ -384,7 +358,7 @@ var doc = `{
                 "tags": [
                     "Admin"
                 ],
-                "summary": "user registration",
+                "summary": "admin registration",
                 "parameters": [
                     {
                         "description": "User registration parameters",

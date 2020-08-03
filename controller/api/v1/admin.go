@@ -19,7 +19,7 @@ import (
 
 // RegistAdmin ...
 // @Tags Admin
-// @Summary user registration
+// @Summary admin registration
 // @Produce application/json
 // @Param data body apiModel.UserRegistParam true "User registration parameters"
 // @Success 200 {object} handler.Response{data=helperModel.PublicUser}
@@ -165,6 +165,7 @@ func UpdateMission(c *gin.Context) {
 	// weightjson, _ := json.Marshal(params.Weight)
 
 	mission, err := helpermodel.UpdateMission(missionID, title, content, weight, score, activeat, inactiveat)
+	fmt.Println(mission.Activeat)
 	_, err = helpermodel.UploadFile(c.Writer, c.Request, "mission", mission.UID)
 	if errors.Unwrap(err) != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
@@ -175,13 +176,13 @@ func UpdateMission(c *gin.Context) {
 	}
 }
 
-// DeleteMission ...
-// @Tags Admin
-// @Summary delete mission
-// @Produce application/json
-// @Param uid path string true "mission uid"
-// @Success 200 {object} handler.Response
-// @Router /admin/missions/{uid} [delete]
+// // DeleteMission ...
+// // @Tags Admin
+// // @Summary delete mission
+// // @Produce application/json
+// // @Param uid path string true "mission uid"
+// // @Success 200 {object} handler.Response
+// // @Router /admin/missions/{uid} [delete]
 func DeleteMission(c *gin.Context) {
 	app := handler.Gin{C: c}
 	missionUID := c.Param("uid")
@@ -201,7 +202,7 @@ func DeleteMission(c *gin.Context) {
 	}
 }
 
-// GetScreenshots ...
+// GetAllScreenshots ...
 // @Tags Admin
 // @Summary list screenshots
 // @Produce application/json
@@ -323,8 +324,10 @@ func BanHelper(c *gin.Context) {
 	userID := c.Param("uid")
 	if id, err := hashids.DecodeUserUID(userID); err != nil {
 		app.Response(http.StatusBadRequest, e.ERR_INVALID_USER_UID, nil)
+		return
 	} else if err := helpermodel.BanUser(id); err != nil {
 		app.Response(http.StatusInternalServerError, e.ERROR, nil)
+		return
 	}
 	app.Response(http.StatusOK, e.SUCCESS, userID)
 }

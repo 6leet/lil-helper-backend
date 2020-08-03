@@ -117,10 +117,15 @@ func UpdateMission(id uint, title string, content string, weight string, score i
 		return nil, fmt.Errorf("mission update failed: %w", err)
 	}
 	tx.Commit()
+
+	utils.ParseTimeLocation(&mission.Activeat)
+	utils.ParseTimeLocation(&mission.Inactiveat)
 	return &mission, nil
 }
 
 func DeleteMission(id uint) error {
+	VTool := config.VTool
+	config := config.Config.Mission
 	mission := Mission{}
 	tx := db.LilHelperDB.Begin()
 	defer tx.RollbackUnlessCommitted()
@@ -132,6 +137,13 @@ func DeleteMission(id uint) error {
 		return fmt.Errorf("mission deletion failed: %w", err)
 	}
 	tx.Commit()
+	_, ok := config.Weight[mission.UID]
+	if ok {
+		delete(config.Weight, mission.UID)
+	}
+	DeleteAssignmentByMission(mission.ID)
+	VTool.Set("mission.totalweight", config.Weight)
+	VTool.WriteConfig()
 	return nil
 }
 
@@ -185,6 +197,9 @@ func GetMissionsWeight(level uint) ([]randutil.Choice, error) {
 		var weight []int
 		if err := json.Unmarshal([]byte(m.Weight), &weight); err != nil {
 			return nil, fmt.Errorf("json unmarshal weight failed: %w", err)
+		}
+		if len(weight) <= int(level) {
+			continue
 		}
 		choice := randutil.Choice{
 			Weight: weight[level],
