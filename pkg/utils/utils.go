@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"lil-helper-backend/config"
 	"strconv"
 	"time"
 )
@@ -19,4 +20,16 @@ func ParseTime(timestr string) time.Time {
 func ParseTimeLocation(t *time.Time) {
 	location, _ := time.LoadLocation("Local")
 	*t = t.In(location)
+}
+
+func ExpToLevel(exp int) uint {
+	maxLevel := config.Config.Mission.Maxlevel
+	levelThres := config.Config.Mission.Levelsexp
+
+	for l := 0; l < maxLevel-1; l++ {
+		if levelThres[l] <= exp && exp < levelThres[l+1] {
+			return uint(l)
+		}
+	}
+	return 0
 }

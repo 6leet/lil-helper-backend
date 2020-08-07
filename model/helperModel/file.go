@@ -3,6 +3,7 @@ package helpermodel
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 )
@@ -16,7 +17,13 @@ func UploadFile(w http.ResponseWriter, r *http.Request, fieldName string, uid st
 		return "", nil
 	}
 	defer file.Close()
-	path := "./files/" + fieldName + "/" + uid + ".jpg"
+	prePath, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println(prePath)
+	path := prePath + "/files/" + fieldName + "/" + uid + ".jpg"
+	// path := "/files/" + fieldName + "/" + uid + ".jpg"
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		fmt.Println("case2", err)

@@ -111,6 +111,12 @@ definitions:
         type: boolean
       admin:
         type: boolean
+      createat:
+        type: string
+      exp:
+        type: integer
+      level:
+        type: integer
       nickname:
         type: string
       score:
@@ -128,6 +134,8 @@ definitions:
         type: string
       content:
         type: string
+      exp:
+        type: integer
       inactiveat:
         type: string
       picture:
@@ -147,6 +155,12 @@ definitions:
         type: boolean
       admin:
         type: boolean
+      createat:
+        type: string
+      exp:
+        type: integer
+      level:
+        type: integer
       nickname:
         type: string
       score:

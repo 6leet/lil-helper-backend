@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"lil-helper-backend/config"
@@ -65,6 +66,17 @@ func CreateMission(c *gin.Context) {
 	score, _ := strconv.Atoi(c.Request.FormValue("score"))
 	activeat := c.Request.FormValue("activeat")
 	inactiveat := c.Request.FormValue("inactiveat")
+	exp := 1
+
+	var weightList []int
+	if err := json.Unmarshal([]byte(weight), &weightList); err != nil {
+		app.Response(http.StatusBadRequest, e.ERR_INVALID_WEIGHT, nil)
+		return
+	}
+	if len(weightList) > int(config.Config.Mission.Maxlevel) {
+		app.Response(http.StatusBadRequest, e.ERR_INVALID_WEIGHT, nil)
+		return
+	}
 
 	var user *helpermodel.User
 	if user = app.GetUser(); user == nil {
@@ -76,7 +88,7 @@ func CreateMission(c *gin.Context) {
 		return
 	}
 
-	m, err := helpermodel.CreateMission(userID, title, content, weight, score, activeat, inactiveat)
+	m, err := helpermodel.CreateMission(userID, title, content, weight, score, activeat, inactiveat, exp)
 	path, err := helpermodel.UploadFile(app.C.Writer, app.C.Request, "mission", m.UID)
 	mission, err := helpermodel.AddMissionPath(m.ID, path)
 	if errors.Unwrap(err) != nil {
@@ -162,10 +174,17 @@ func UpdateMission(c *gin.Context) {
 	score, _ := strconv.Atoi(c.Request.FormValue("score"))
 	activeat := c.Request.FormValue("activeat")
 	inactiveat := c.Request.FormValue("inactiveat")
+	exp := 1
 
-	fmt.Println("title", title)
-	fmt.Println("activeat", activeat)
-	fmt.Println("inactiveat", inactiveat)
+	var weightList []int
+	if err := json.Unmarshal([]byte(weight), &weightList); err != nil {
+		app.Response(http.StatusBadRequest, e.ERR_INVALID_WEIGHT, nil)
+		return
+	}
+	if len(weightList) > int(config.Config.Mission.Maxlevel) {
+		app.Response(http.StatusBadRequest, e.ERR_INVALID_WEIGHT, nil)
+		return
+	}
 
 	missionUID := c.Param("uid")
 	missionID, err := hashids.DecodeMissionUID(missionUID)
@@ -174,9 +193,7 @@ func UpdateMission(c *gin.Context) {
 		return
 	}
 
-	// weightjson, _ := json.Marshal(params.Weight)
-
-	mission, err := helpermodel.UpdateMission(missionID, title, content, weight, score, activeat, inactiveat)
+	mission, err := helpermodel.UpdateMission(missionID, title, content, weight, score, activeat, inactiveat, exp)
 	fmt.Println(mission.Activeat)
 	_, err = helpermodel.UploadFile(c.Writer, c.Request, "mission", mission.UID)
 	if errors.Unwrap(err) != nil {

@@ -9,6 +9,7 @@ import (
 	helpermodel "lil-helper-backend/model/helperModel"
 	"lil-helper-backend/pkg/e"
 	"lil-helper-backend/pkg/handler"
+	"lil-helper-backend/pkg/utils"
 	"net/http"
 	"time"
 
@@ -43,7 +44,8 @@ func GetMission(c *gin.Context) { // need: userID
 		app.Response(http.StatusOK, e.SUCCESS, mission.Public())
 		return
 	} else if err == e.ErrAssignmentNotExist {
-		choices, err := helpermodel.GetMissionsWeight(user.Level)
+		level := utils.ExpToLevel(user.Exp)
+		choices, err := helpermodel.GetMissionsWeight(level)
 		if err != nil {
 			app.Response(http.StatusBadRequest, e.ERROR, nil)
 			return

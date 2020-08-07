@@ -18,6 +18,9 @@ type PublicUser struct {
 	Active   bool   `json:"active"`
 	Score    int    `json:"score"`
 	Nickname string `json:"nickname"`
+	Exp      int    `json:"exp"`
+	Createat string `json:"createat"`
+	Level    uint   `json:"level"`
 }
 
 func (u *User) Public() (pu PublicUser) {
@@ -27,6 +30,9 @@ func (u *User) Public() (pu PublicUser) {
 	pu.Active = u.Active
 	pu.Score = u.Score
 	pu.Nickname = u.Nickname
+	pu.Exp = u.Exp
+	pu.Createat = u.CreatedAt.String()[0:10]
+	pu.Level = utils.ExpToLevel(u.Exp)
 	return pu
 }
 
@@ -114,7 +120,7 @@ func BanUser(id uint) error {
 	return nil
 }
 
-func SetUserScore(id uint, missionID uint, addvar int) (*User, error) {
+func SetUserScoreExp(id uint, missionID uint, addvar int) (*User, error) {
 	user := User{}
 	mission := Mission{}
 	tx := db.LilHelperDB.Begin()
@@ -124,10 +130,19 @@ func SetUserScore(id uint, missionID uint, addvar int) (*User, error) {
 		return nil, fmt.Errorf("query mission failed: %w", err)
 	}
 	scorevar := mission.Score * addvar
+	expvar := mission.Exp * addvar
+	tx = tx.Find(&user, id)
+	updateUser := map[string]interface{}{
+		"score": user.Score + scorevar,
+		"exp":   user.Exp + expvar,
+	}
 	fmt.Println(scorevar, mission.Score, addvar)
-	if err := tx.Find(&user, id).Update("score", gorm.Expr("score + ?", scorevar)).Error; err != nil {
+	if err := tx.Updates(updateUser).Error; err != nil {
 		return nil, fmt.Errorf("user update failed: %w", err)
 	}
+	// if err := tx.Update("score", gorm.Expr("score + ?", scorevar)).Error; err != nil {
+	// 	return nil, fmt.Errorf("user update failed: %w", err)
+	// }
 	tx.Commit()
 	return &user, nil
 }

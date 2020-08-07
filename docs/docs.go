@@ -1118,6 +1118,15 @@ var doc = `{
                 "admin": {
                     "type": "boolean"
                 },
+                "createat": {
+                    "type": "string"
+                },
+                "exp": {
+                    "type": "integer"
+                },
+                "level": {
+                    "type": "integer"
+                },
                 "nickname": {
                     "type": "string"
                 },
@@ -1143,6 +1152,9 @@ var doc = `{
                 },
                 "content": {
                     "type": "string"
+                },
+                "exp": {
+                    "type": "integer"
                 },
                 "inactiveat": {
                     "type": "string"
@@ -1172,6 +1184,15 @@ var doc = `{
                 },
                 "admin": {
                     "type": "boolean"
+                },
+                "createat": {
+                    "type": "string"
+                },
+                "exp": {
+                    "type": "integer"
+                },
+                "level": {
+                    "type": "integer"
                 },
                 "nickname": {
                     "type": "string"

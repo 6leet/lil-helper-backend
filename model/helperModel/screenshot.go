@@ -124,7 +124,7 @@ func SetScreeshotApprove(id uint, approve bool) (*Screenshot, error) {
 		return nil, fmt.Errorf("screenshot update failed: %w", err)
 	}
 	tx.Commit()
-	_, err := SetUserScore(userID, missionID, addvar)
+	_, err := SetUserScoreExp(userID, missionID, addvar)
 	if err != nil {
 		return nil, err
 	}

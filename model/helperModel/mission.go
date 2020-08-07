@@ -48,7 +48,7 @@ func (m *Mission) Public() PublicMission {
 	return p
 }
 
-func CreateMission(userID uint, title string, content string, weightstr string, score int, activeat string, inactiveat string) (*Mission, error) {
+func CreateMission(userID uint, title string, content string, weightstr string, score int, activeat string, inactiveat string, exp int) (*Mission, error) {
 	mission := Mission{
 		Title:      title,
 		Content:    content,
@@ -57,6 +57,7 @@ func CreateMission(userID uint, title string, content string, weightstr string, 
 		Active:     false,
 		Activeat:   utils.ParseTime(activeat),
 		Inactiveat: utils.ParseTime(inactiveat),
+		Exp:        exp,
 	}
 
 	tx := db.LilHelperDB.Begin()
@@ -99,7 +100,7 @@ func AddMissionPath(id uint, picture string) (*Mission, error) {
 	return &mission, nil
 }
 
-func UpdateMission(id uint, title string, content string, weight string, score int, activeat string, inactiveat string) (*Mission, error) {
+func UpdateMission(id uint, title string, content string, weight string, score int, activeat string, inactiveat string, exp int) (*Mission, error) {
 	mission := Mission{}
 	updateMission := map[string]interface{}{
 		"title":      title,
@@ -108,6 +109,7 @@ func UpdateMission(id uint, title string, content string, weight string, score i
 		"score":      score,
 		"activeat":   utils.ParseTime(activeat),
 		"inactiveat": utils.ParseTime(inactiveat),
+		"exp":        exp,
 	}
 
 	tx := db.LilHelperDB.Begin()

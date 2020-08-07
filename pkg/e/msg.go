@@ -19,7 +19,7 @@ var msgMap = map[int]string{
 	ERR_INVALID_QUERY_TYPE:      "invalid query type",
 	ERR_INVALID_TIME_STAMP:      "invalid query timestamp",
 	ERR_INVALID_TRANSACTION_UID: "invalid transaction uid",
-	ERR_INVALID_ROUND_TIME:      "invalid round time",
+	ERR_INVALID_WEIGHT:          "invalid weight len",
 	ERR_INVALID_BET_UID:         "invalid bet uid",
 	ERR_NO_SUCH_BET:             "no such bet",
 	ERR_NO_SUCH_MISSION:         "no such mission",
