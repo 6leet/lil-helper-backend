@@ -40,6 +40,7 @@ func init() {
 					"admin":     u.Admin,
 					"nonce":     u.UpdatedAt.Unix(),
 					"nickname":  u.Nickname,
+					"password":  u.Password,
 				}
 			}
 			return jwt.MapClaims{}
@@ -54,9 +55,9 @@ func init() {
 				return nil
 			} else if user, err := helpermodel.GetUser(userID); err != nil {
 				return nil
-			} else if nonce, ok := claims["nonce"].(float64); !ok {
+			} else if password, ok := claims["password"].(string); !ok {
 				return nil
-			} else if !user.Active || int64(user.UpdatedAt.Unix()) > int64(nonce) {
+			} else if !user.Active || user.Password != password {
 				return nil
 			} else {
 				return user
