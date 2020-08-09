@@ -1135,6 +1135,9 @@
                 "createat": {
                     "type": "string"
                 },
+                "email": {
+                    "type": "string"
+                },
                 "exp": {
                     "type": "integer"
                 },
@@ -1200,6 +1203,9 @@
                     "type": "boolean"
                 },
                 "createat": {
+                    "type": "string"
+                },
+                "email": {
                     "type": "string"
                 },
                 "exp": {

@@ -21,6 +21,7 @@ type PublicUser struct {
 	Exp      int    `json:"exp"`
 	Createat string `json:"createat"`
 	Level    uint   `json:"level"`
+	Email    string `json:"email"`
 }
 
 func (u *User) Public() (pu PublicUser) {
@@ -33,6 +34,7 @@ func (u *User) Public() (pu PublicUser) {
 	pu.Exp = u.Exp
 	pu.Createat = u.CreatedAt.String()[0:10]
 	pu.Level = utils.ExpToLevel(u.Exp)
+	pu.Email = u.Email
 	return pu
 }
 
@@ -149,7 +151,12 @@ func SetUserScoreExp(id uint, missionID uint, addvar int) (*User, error) {
 
 func UpdateUser(id uint, password string, email string, nickname string) (*User, error) {
 	user := User{}
-	passwordMD5 := utils.MD5V([]byte(password))
+	var passwordMD5 string
+	if password == "" {
+		passwordMD5 = ""
+	} else {
+		passwordMD5 = utils.MD5V([]byte(password))
+	}
 	updateUser := User{
 		Password: passwordMD5,
 		Nickname: nickname,

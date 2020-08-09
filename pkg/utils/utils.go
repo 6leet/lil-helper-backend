@@ -18,7 +18,7 @@ func ParseTime(timestr string) time.Time {
 }
 
 func ParseTimeLocation(t *time.Time) {
-	location, _ := time.LoadLocation("Local")
+	location, _ := time.LoadLocation("PRC")
 	*t = t.In(location)
 }
 

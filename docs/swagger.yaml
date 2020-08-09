@@ -113,6 +113,8 @@ definitions:
         type: boolean
       createat:
         type: string
+      email:
+        type: string
       exp:
         type: integer
       level:
@@ -156,6 +158,8 @@ definitions:
       admin:
         type: boolean
       createat:
+        type: string
+      email:
         type: string
       exp:
         type: integer

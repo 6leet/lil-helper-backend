@@ -1152,6 +1152,9 @@ var doc = `{
                 "createat": {
                     "type": "string"
                 },
+                "email": {
+                    "type": "string"
+                },
                 "exp": {
                     "type": "integer"
                 },
@@ -1217,6 +1220,9 @@ var doc = `{
                     "type": "boolean"
                 },
                 "createat": {
+                    "type": "string"
+                },
+                "email": {
                     "type": "string"
                 },
                 "exp": {
