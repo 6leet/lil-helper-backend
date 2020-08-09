@@ -12,6 +12,7 @@ func InitCommonRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	CommonRouter.Use(middleware.HelperJwt())
 	{
 		CommonRouter.GET("helpers", v1.GetTopScoreHelpers)
+		CommonRouter.GET("profile", v1.GetUser)
 	}
 	return CommonRouter
 }

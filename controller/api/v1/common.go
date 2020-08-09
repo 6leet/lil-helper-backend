@@ -42,3 +42,19 @@ func GetTopScoreHelpers(c *gin.Context) {
 		app.Response(http.StatusOK, e.SUCCESS, jsonArray)
 	}
 }
+
+// GetUser ...
+// @Tags Common
+// @Summary get user profile
+// @Produce application/json
+// @Success 200 {object} handler.Response{data=helpermodel.User}
+// @Router /profile [get]
+func GetUser(c *gin.Context) {
+	app := handler.Gin{C: c}
+
+	var user *helpermodel.User
+	if user = app.GetUser(); user == nil {
+		return
+	}
+	app.Response(http.StatusOK, e.SUCCESS, user.Public())
+}

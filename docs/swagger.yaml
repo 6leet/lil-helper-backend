@@ -771,4 +771,21 @@ paths:
       summary: list top score users
       tags:
       - Common
+  /profile:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/helpermodel.User'
+              type: object
+      summary: get user profile
+      tags:
+      - Common
 swagger: "2.0"
